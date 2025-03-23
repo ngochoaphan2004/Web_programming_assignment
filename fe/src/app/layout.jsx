@@ -6,7 +6,6 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-import ToasterContext from "@/asset/context/ToastContext";
 
 const theme = {
   colors: {
@@ -25,7 +24,6 @@ export default function RootLayout({ children }) {
           defaultTheme="light"
           theme={theme}
         >
-          <ToasterContext />
           {children}
         </ThemeProvider>
       </body>
