@@ -13,11 +13,28 @@ $uri = trim($uri, '/'); // Loại bỏ dấu '/'
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 
-if ($uri === 'users' && $requestMethod === 'GET') {
-    $userController->getUsers();
-} elseif ($uri === 'users' && $requestMethod === 'POST') {
-    $userController->createUser();
-} else {
-    echo json_encode(["success" => false, "message" => "Route không tồn tại"]);
+switch (true) {
+    case $uri === 'users' && $requestMethod === 'GET':
+        $userController->getUsers();
+        break;
+
+    case $uri === 'users' && $requestMethod === 'POST':
+        $userController->createUser();
+        break;
+
+    case $uri === 'register' && $requestMethod === 'POST':
+        $userController->register();
+        break;
+
+    case $uri === 'login' && $requestMethod === 'POST':
+        $userController->login();
+        break;
+    case $uri === 'profile' && $requestMethod === 'POST':
+        $userController->editProfile();
+        break;
+    default:
+        http_response_code(404);
+        echo json_encode(["success" => false, "message" => "Route không tồn tại"]);
+        break;
 }
 ?>
