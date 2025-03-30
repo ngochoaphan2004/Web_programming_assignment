@@ -1,18 +1,16 @@
 "use client";
-
+import Header from "../components/navbar/header";
 import "../globals.css";
 import "../assets/app.css"
-import "../assets/app-dark.css"
 import "../assets/iconly.css"
-
-import Header from "../components/navbar/header";
+import "../assets/auth.css"
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
         <div id="main" className="layout-horizontal">
-          <Header authen/>
+          <Header admin authen/>
           <div className="page-content container">
             {children}
           </div>

@@ -9,8 +9,8 @@ body {
 #auth {
     height: 100vh;
     overflow-x: hidden;
-    display: flex;
-    align-items: center;
+    /* display: flex;
+    align-items: center; */
 }
 
 #auth #auth-left {
