@@ -76,14 +76,21 @@ export default function Header(props) {
     }, [isOpen])
 
     return (
-        <header className="mb-5">
+        <header className="mb-2">
             <div className="header-top">
                 <div className="container">
                     {props.admin ?
                         <>
                             <div className="logo flex">
-                                <a href="/"><img src={props.admin ? "/logo-admin.png" : "/logo.png"} alt="Logo" /></a>
+                                <a href="/" className="block">
+                                    <img
+                                        src={props.admin ? "/logo-admin.png" : "/logo.png"}
+                                        alt="Logo"
+                                        className="!h-6 sm:!h-8 md:!h-10 w-auto max-w-full object-contain"
+                                    />
+                                </a>
                             </div>
+
                             <nav className="main-navbar">
                                 <div className="container">
                                     <ul>
@@ -117,7 +124,13 @@ export default function Header(props) {
                         :
                         <>
                             <div className="logo flex">
-                                <a href="/"><img src={props.admin ? "/logo-admin.png" : "/logo.png"} alt="Logo" /></a>
+                                <a href="/" className="block">
+                                    <img
+                                        src={props.admin ? "/logo-admin.png" : "/logo.png"}
+                                        alt="Logo"
+                                        className="!h-6 sm:!h-8 md:!h-10 w-auto max-w-full object-contain"
+                                    />
+                                </a>
                             </div>
                             <nav className="main-navbar">
                                 <div className="container">
@@ -167,34 +180,53 @@ export default function Header(props) {
 
                     <div className="header-top-right">
 
-                        {!props.authen ?
-                            (<div className="flex gap-4">
-                                <a href="/sign-in" className="btn px-3 text-[20px]!">Login</a>
-                                <a href="/sign-up" className="btn btn-primary rounded px-3 text-[20px]!">Sign Up</a>
-                            </div>) :
-                            (
-                                <div className="dropdown">
-                                    <a href="#" id="topbarUserDropdown"
-                                        className="user-dropdown d-flex align-items-center dropend dropdown-toggle"
-                                        data-bs-toggle="dropdown" aria-expanded="false"
-                                        onClick={() => setDropdown(prev => !prev)}>
-                                        <div className="avatar avatar-md2">
-                                            <img src="/avatar.png" alt="Avatar" />
-                                        </div>
-                                        <div className="text">
-                                            <h6 className="user-dropdown-name">John Ducky</h6>
-                                        </div>
-                                    </a>
-                                    <ul className={`dropdown-menu dropdown-menu-end shadow-lg ${dropdown ? "show" : ""}`} aria-labelledby="topbarUserDropdow"
-                                    >
-                                        <li><a className="dropdown-item" href="#">My Account</a></li>
-                                        <li><a className="dropdown-item" href="#">Settings</a></li>
-                                        <li><hr className="dropdown-divider" /></li>
-                                        <li><a className="dropdown-item" href="auth-login.html">Logout</a></li>
+                        {!props.authen ? (
+                            <div className="flex flex-row gap-3 sm:gap-4 items-center sm:items-start">
+                            <a
+                              href="/sign-in"
+                              className="text-[10px] sm:text-[16px] md:text-[20px] font-medium hover:underline"
+                            >
+                              Login
+                            </a>
+                            <a
+                              href="/sign-up"
+                              className="bg-blue-600 text-white rounded px-2 py-1 text-[10px] sm:text-[16px] md:text-[20px] font-semibold hover:bg-blue-700 transition"
+                            >
+                              Sign Up
+                            </a>
+                          </div>
+                          
+                        ) : (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setDropdown(prev => !prev)}
+                                    className="flex items-center gap-2 focus:outline-none"
+                                >
+                                    <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
+                                        <img src="/avatar.png" alt="Avatar" className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="hidden sm:block">
+                                        <h6 className="text-base font-medium">John Ducky</h6>
+                                    </div>
+                                </button>
+
+                                {dropdown && (
+                                    <ul className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
+                                        <li>
+                                            <a href="#" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
+                                        </li>
+                                        <li><hr className="my-1 border-gray-200" /></li>
+                                        <li>
+                                            <a href="/sign-in" className="block px-4 py-2 text-red-500 hover:bg-gray-100">Logout</a>
+                                        </li>
                                     </ul>
-                                </div>
-                            )
-                        }
+                                )}
+                            </div>
+                        )}
+
 
                         {/* <!-- Burger button responsive --> */}
                         <a href="#" className="burger-btn d-block d-xl-none" onClick={() => setSecondNB(prev => !prev)}>
