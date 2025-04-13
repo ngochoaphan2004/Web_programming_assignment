@@ -9,3 +9,4 @@ header("Content-Type: application/json");
 
 // Import file API routes
 require_once '../routes/api.php';
+?>
