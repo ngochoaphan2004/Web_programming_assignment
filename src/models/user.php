@@ -1,6 +1,9 @@
 <?php
 require_once '../core/database.php';
 
+require_once '../utils/JWT.php';
+use \Firebase\JWT\JWT;
+
 class User {
     private $db;
 
@@ -45,10 +48,39 @@ class User {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if (!$user || !password_verify($password, $user['password'])) {
+            http_response_code(401);
+            echo json_encode(["success" => false, "message" => "Email hoặc mật khẩu không đúng"]);
             return null;
         }
-        return $user;
+        
+        // Đăng nhập thành công → Tạo session (hoặc JWT token)
+        $key = "your_secret_key";  // Khóa bí mật để mã hóa và giải mã token
+        $payload = [
+            "user_id" => $user['id'],
+            "username" => $user['username'],
+            "email" => $user['email']
+        ];
+        $jwt = JWT::encode($payload, $key, 'HS256');
+
+        // Them token vao sql
+        $expire = new DateTime();
+        $expire->modify('+12 hours');
+        $formattedExpire = $expire->format('Y-m-d H:i:s');
+
+        $updateStmt = $this->db->prepare("UPDATE users SET token = ?, token_expire = ? WHERE id = ?");
+        $updateStmt->execute([$jwt, $formattedExpire, $user['id']]);
+
+        return [
+            'token' => $jwt,
+            'user' => [
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'avatar' => $user['avatar']
+            ]
+        ];
     }
 
     public function updateProfile($id,$name, $username, $dob, $phone, $address) {
@@ -62,11 +94,13 @@ class User {
             ':address' => $address
         ]);
     }
+
     public function changePassword($id, $newPassword) {
         $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
         $stmt = $this->db->prepare("UPDATE users SET password = :password WHERE id = :id");
         return $stmt->execute([':id' => $id, ':password' => $hashedPassword]);
     }
+
     public function deleteUser($id) {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
         return $stmt->execute([$id]);
