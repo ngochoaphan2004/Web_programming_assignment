@@ -181,21 +181,21 @@ export default function Header(props) {
                     <div className="header-top-right">
 
                         {!props.authen ? (
-                            <div className="flex flex-row gap-3 sm:gap-4 items-center sm:items-start">
-                            <a
-                              href="/sign-in"
-                              className="text-[10px] sm:text-[16px] md:text-[20px] font-medium hover:underline"
-                            >
-                              Login
-                            </a>
-                            <a
-                              href="/sign-up"
-                              className="bg-blue-600 text-white rounded px-2 py-1 text-[10px] sm:text-[16px] md:text-[20px] font-semibold hover:bg-blue-700 transition"
-                            >
-                              Sign Up
-                            </a>
-                          </div>
-                          
+                            <div className="flex flex-row gap-3 sm:gap-4 items-center">
+                                <a
+                                    href="/sign-in"
+                                    className="text-[10px] sm:text-[16px] md:text-[20px] font-medium hover:underline"
+                                >
+                                    Login
+                                </a>
+                                <a
+                                    href="/sign-up"
+                                    className="bg-blue-600 text-white rounded px-2 py-1 text-[10px] sm:text-[16px] md:text-[20px] font-semibold hover:bg-blue-700 transition"
+                                >
+                                    Sign Up
+                                </a>
+                            </div>
+
                         ) : (
                             <div className="relative">
                                 <button
@@ -235,7 +235,7 @@ export default function Header(props) {
                     </div>
                 </div>
 
-                <nav id="second-navbar" className="main-navbar mt-2 active hidden">
+                <nav id="second-navbar" className="main-navbar mt-2 hidden">
                     <div className="container">
                         {props.admin ?
                             <ul>

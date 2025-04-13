@@ -3,37 +3,6 @@ import React, { useEffect, useState } from "react";
 import Carousel from 'react-bootstrap/Carousel';
 
 export default function Home() {
-  const adsData = [
-    {
-      title: "Travis Scott x Nike",
-      description: "AIR JORDAN 1 LOW OG SP \"REVERSE OLIVE\"",
-      bg: "bg-gray-100",
-    },
-    {
-      title: "VERDY x Nike SB Dunk Low",
-      description: "\"Visty\"",
-      bg: "bg-pink-100",
-    },
-    {
-      title: "AJ1 Yellow Ochre",
-      description: <button className="mt-2 bg-black text-white px-3 py-1 text-sm rounded">Buy & Sell Now</button>,
-      bg: "bg-yellow-100",
-    },
-  ];
-
-
-  const [currentAd, setCurrentAd] = useState(0);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setCurrentAd((prev) => ((prev + 1) % adsData.length));
-  //   }, 3000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  const nextSlide = () => {
-    setCurrentAd((prev) => (prev + 1) % adsData.length);
-  }
 
   return (
     <div className="bg-white font-sans">
