@@ -6,11 +6,15 @@ header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-// Lấy đường dẫn request và loại bỏ đường dẫn thư mục gốc
 
-$basePath = '/src/public'; // Cập nhật base path cho phù hợp
+$basePath = '/BTL_LTW/src/public'; 
+// $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+// $basePath = dirname($_SERVER['SCRIPT_NAME']); 
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
+$basePath = rtrim(dirname($scriptName), '/');
+
 $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$uri = trim($uri, '/'); // Loại bỏ dấu '/'
+$uri = trim($uri, '/');
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
@@ -22,7 +26,7 @@ switch (true) {
         $userController->login();
         break;
 
-    case $uri === 'register' && $requestMethod === 'POST':
+    case $uri === 'user/register' && $requestMethod === 'POST':
         $userController->register();
         break;
 
@@ -69,6 +73,26 @@ switch (true) {
     // POST /contacts/answer
     case $uri === 'contacts/answer' && $requestMethod === 'POST':
         $contactController->answerContact();
+    case $uri === 'user/login' && $requestMethod === 'POST':
+        $userController->login();
+        break;
+    case $uri === 'user/edit-profile' && $requestMethod === 'POST':
+        $userController->editProfile();
+        break;
+    case $uri === 'user/session-check' && $requestMethod === 'GET':
+        $userController->checkSession();
+        break;
+    case $uri === 'user/logout' && $requestMethod === 'POST':
+        $userController->logout();
+        break;
+    case $uri === 'user' && $requestMethod === 'DELETE':
+        $userController->deleteUser();
+        break;
+    case $uri === 'users/avatar' && $requestMethod === 'POST':
+        $userController->uploadAvatar();
+        break;
+    case $uri === 'users/change-password' && $requestMethod === 'POST':
+        $userController->changePassword();
         break;
 
     default:

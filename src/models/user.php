@@ -105,5 +105,11 @@ class User {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    public function updateAvatar($id, $avatarPath) {
+        $query = "UPDATE users SET avatar = ? WHERE id = ?";
+        $stmt = $this->db->prepare($query);
+        return $stmt->execute([':id' => $id, ':avatar' => $avatarPath]);
+    }
 }
 ?>

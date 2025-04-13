@@ -10,7 +10,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body>
         <div id="main" className="layout-horizontal">
-          <Header admin authen/>
+          <Header/>
           <div className="page-content container">
             {children}
           </div>
