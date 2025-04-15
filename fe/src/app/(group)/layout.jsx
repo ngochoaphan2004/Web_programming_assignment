@@ -16,6 +16,7 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     Cookies.get('auth_token')
   },[])
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <body>

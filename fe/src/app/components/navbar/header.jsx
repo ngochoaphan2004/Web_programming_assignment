@@ -2,70 +2,38 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-// import "../../assets/js/app"
+
+const UserNav = [
+    { url: "/", title: "Home", elementID: "home" },
+    { url: "/sneaker", title: "Sneaker", elementID: "sneaker" },
+    { url: "/sandal", title: "Sandal", elementID: "sandal" },
+    { url: "/balo", title: "Balo", elementID: "balo" },
+    { url: "/all", title: "All", elementID: "all" }
+]
+
+const AdminNav = [
+    { url: "/admin/content", title: "Pages content", elementID: "content" },
+    { url: "/admin/contact", title: "Contact", elementID: "contact" },
+    { url: "/admin/accounts", title: "Accounts", elementID: "accounts" },
+    { url: "/admin/products", title: "Products", elementID: "products" },
+    { url: "/admin/receipts", title: "Receipts", elementID: "receipts" }
+]
+
+
 export default function Header(props) {
     const [url, setUrl] = useState("");
     const [authenUrl, setAuthenUrl] = useState("");
     const [isOpen, setSecondNB] = useState(true);
     const pathname = usePathname();
     useEffect(() => {
-        if (props.admin)
+        if (props.admin) {
             setAuthenUrl(pathname);
+        }
         else
             setUrl(pathname);
     }, [])
 
     const [dropdown, setDropdown] = useState(false)
-
-    useEffect(() => {
-        let element;
-        switch (url) {
-            case "/":
-                element = document.getElementById('home')
-                break;
-
-            case "/sneaker":
-                element = document.getElementById('sneaker')
-                break;
-
-            case "/sandal":
-                element = document.getElementById('sandal')
-                break;
-
-            case "/balo":
-                element = document.getElementById('balo')
-                break;
-
-            case "/all":
-                element = document.getElementById('all')
-                break;
-        }
-        if (element)
-            element.classList.add("active")
-    }, [url])
-
-    useEffect(() => {
-        let element;
-        switch (authenUrl) {
-            case "/admin/pages":
-                element = document.getElementById('pages')
-                break;
-
-            case "/admin/accounts":
-                element = document.getElementById('accounts')
-                break;
-
-            case "/admin/products":
-                element = document.getElementById('products')
-                break;
-
-            case "/admin/receipts":
-                element = document.getElementById('receipts')
-                break;
-        }
-        if (element)
-            element.classList.add("active")
-    }, [authenUrl])
 
     useEffect(() => {
         let element = document.getElementById("second-navbar")
@@ -84,39 +52,24 @@ export default function Header(props) {
                             <div className="logo flex">
                                 <a href="/" className="block">
                                     <img
-                                        src={props.admin ? "/logo-admin.png" : "/logo.png"}
+                                        src="/logo.png"
                                         alt="Logo"
                                         className="!h-6 sm:!h-8 md:!h-10 w-auto max-w-full object-contain"
                                     />
                                 </a>
+                                <span className="self-end inline-block text-[10px] py-0.5 text-black rounded-md no-underline font-bold">ADMIN</span>
                             </div>
 
                             <nav className="main-navbar">
                                 <div className="container">
                                     <ul>
-                                        <li id="pages" className="menu-item">
-                                            <a href="/admin/pages" className='menu-link'>
-                                                <span>Pages</span>
-                                            </a>
-                                        </li>
-
-                                        <li id="accounts" className="menu-item">
-                                            <a href="/admin/accounts" className='menu-link'>
-                                                <span>Accounts</span>
-                                            </a>
-                                        </li>
-
-                                        <li id="products" className="menu-item">
-                                            <a href="/admin/products" className='menu-link'>
-                                                <span>Products</span>
-                                            </a>
-                                        </li>
-
-                                        <li id="receipts" className="menu-item">
-                                            <a href="/admin/receipts" className='menu-link'>
-                                                <span>Receipts</span>
-                                            </a>
-                                        </li>
+                                        {AdminNav.map((item, index) => (
+                                            <li key={index} id={item.elementID} className={`menu-item ${authenUrl === item.url ? 'active' :''}`}>
+                                                <a href={item.url} className='menu-link'>
+                                                    <span>{item.title}</span>
+                                                </a>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
                             </nav>
@@ -126,7 +79,7 @@ export default function Header(props) {
                             <div className="logo flex">
                                 <a href="/" className="block">
                                     <img
-                                        src={props.admin ? "/logo-admin.png" : "/logo.png"}
+                                        src={"/logo.png"}
                                         alt="Logo"
                                         className="!h-6 sm:!h-8 md:!h-10 w-auto max-w-full object-contain"
                                     />
@@ -135,42 +88,13 @@ export default function Header(props) {
                             <nav className="main-navbar">
                                 <div className="container">
                                     <ul>
-                                        <li id="home" className="menu-item">
-                                            <a href="/" className='menu-link'>
-                                                <span>Home</span>
-                                            </a>
-                                        </li>
-
-                                        <li id="sneaker" className="menu-item">
-                                            <a href="/sneaker" className='menu-link'>
-                                                <span>Sneaker</span>
-                                            </a>
-                                        </li>
-
-
-
-                                        <li id="sandal" className="menu-item">
-                                            <a href="/sandal" className='menu-link'>
-                                                <span>Sandal</span>
-                                            </a>
-                                        </li>
-
-
-
-                                        <li id="balo" className="menu-item">
-                                            <a href="/balo" className='menu-link'>
-                                                <span>Balo</span>
-                                            </a>
-                                        </li>
-
-
-                                        <li id="all" className="menu-item">
-                                            <a href="/all" className='menu-link'>
-                                                <span>All</span>
-                                            </a>
-                                        </li>
-
-
+                                        {UserNav.map((item, index) => (
+                                            <li key={index} id={item.elementID} className={`menu-item ${url === item.url ? 'active' :''}`}>
+                                                <a href={item.url} className='menu-link'>
+                                                    <span>{item.title}</span>
+                                                </a>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
                             </nav>
@@ -239,66 +163,23 @@ export default function Header(props) {
                     <div className="container">
                         {props.admin ?
                             <ul>
-                                <li id="pages" className="menu-item">
-                                    <a href="/admin/pages" className='menu-link'>
-                                        <span>Pages</span>
-                                    </a>
-                                </li>
-
-                                <li id="accounts" className="menu-item">
-                                    <a href="/admin/accounts" className='menu-link'>
-                                        <span>Accounts</span>
-                                    </a>
-                                </li>
-
-                                <li id="products" className="menu-item">
-                                    <a href="/admin/products" className='menu-link'>
-                                        <span>Products</span>
-                                    </a>
-                                </li>
-
-                                <li id="receipts" className="menu-item">
-                                    <a href="/admin/receipts" className='menu-link'>
-                                        <span>Receipts</span>
-                                    </a>
-                                </li>
+                                {AdminNav.map((item, index) => (
+                                    <li key={index} id={item.elementID} className={`menu-item ${authenUrl === item.url ? 'active' :''}`}>
+                                        <a href={item.url} className='menu-link'>
+                                            <span>{item.title}</span>
+                                        </a>
+                                    </li>
+                                ))}
                             </ul>
                             :
                             <ul>
-                                <li id="home" className="menu-item">
-                                    <a href="/" className='menu-link'>
-                                        <span>Home</span>
-                                    </a>
-                                </li>
-
-                                <li id="sneaker" className="menu-item">
-                                    <a href="/sneaker" className='menu-link'>
-                                        <span>Sneaker</span>
-                                    </a>
-                                </li>
-
-
-
-                                <li id="sandal" className="menu-item">
-                                    <a href="/sandal" className='menu-link'>
-                                        <span>Sandal</span>
-                                    </a>
-                                </li>
-
-
-
-                                <li className="menu-item">
-                                    <a id="balo" href="/balo" className='menu-link'>
-                                        <span>Balo</span>
-                                    </a>
-                                </li>
-
-
-                                <li className="menu-item">
-                                    <a id="all" href="/all" className='menu-link'>
-                                        <span>All</span>
-                                    </a>
-                                </li>
+                                {UserNav.map((item, index) => (
+                                    <li key={index} id={item.elementID} className={`menu-item ${url === item.url ? 'active' :''}`}>
+                                        <a href={item.url} className='menu-link'>
+                                            <span>{item.title}</span>
+                                        </a>
+                                    </li>
+                                ))}
                             </ul>
                         }
                     </div>
