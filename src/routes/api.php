@@ -2,27 +2,24 @@
 require_once '../controllers/user.php';
 require_once '../controllers/contact.php';
 
-header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-$basePath = '/BTL_LTW/src/public'; 
+// Cho phép các phương thức và header phù hợp
+// $basePath = '/BTL_LTW/src/public'; 
+// $basePath = '/api';
 // $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-// $basePath = dirname($_SERVER['SCRIPT_NAME']); 
+$basePath = dirname($_SERVER['SCRIPT_NAME']); 
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
-
 $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $uri = trim($uri, '/');
-
+$uri = str_replace("api", '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$uri = trim($uri, '/');
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
 
 switch (true) {
     // USER
-    case $uri === 'login' && $requestMethod === 'POST':
+    case $uri === 'user/login' && $requestMethod === 'POST':
         $userController->login();
         break;
 
@@ -38,7 +35,7 @@ switch (true) {
     //     $userController->createUser();
     //     break;
 
-    case $uri === 'profile' && $requestMethod === 'POST':
+    case $uri === 'user/profile' && $requestMethod === 'POST':
         $userController->editProfile();
         break;
 
@@ -73,9 +70,6 @@ switch (true) {
     // POST /contacts/answer
     case $uri === 'contacts/answer' && $requestMethod === 'POST':
         $contactController->answerContact();
-    case $uri === 'user/login' && $requestMethod === 'POST':
-        $userController->login();
-        break;
     case $uri === 'user/edit-profile' && $requestMethod === 'POST':
         $userController->editProfile();
         break;

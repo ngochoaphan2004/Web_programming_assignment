@@ -11,7 +11,7 @@ class AuthService {
                 "admin" => $_SESSION['role'] == 1,
                 "user" => [
                     "id" => $_SESSION['user_id'],
-                    "username" => $_SESSION['username'],
+                    "name" => $_SESSION['name'],
                     "email" => $_SESSION['email'],
                     "role" => $_SESSION['role']
                 ]

@@ -1,6 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation";
+import axios from "axios";
 import { useEffect, useState } from "react";
 // import "../../assets/js/app"
 export default function Header(props) {
@@ -8,6 +9,23 @@ export default function Header(props) {
     const [authenUrl, setAuthenUrl] = useState("");
     const [isOpen, setSecondNB] = useState(true);
     const pathname = usePathname();
+    const handleLogout = async () => {
+        try {
+          const response = await axios.post("http://localhost:80/api/user/logout", {}, {
+            withCredentials: true // Để gửi cookie (nếu dùng session PHP)
+          });
+    
+          if (response.data.success) {
+            window.location.href = "/";
+            // router.push("/");
+          } else {
+            alert("Logout failed");
+          }
+        } catch (error) {
+          console.error("Logout error:", error);
+          alert("An error occurred. Please try again.");
+        }
+      };
     useEffect(() => {
         if (props.admin)
             setAuthenUrl(pathname);
@@ -206,7 +224,7 @@ export default function Header(props) {
                                         <img src="/avatar.png" alt="Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="hidden sm:block">
-                                        <h6 className="text-base font-medium">John Ducky</h6>
+                                        <h6 className="text-base font-medium">{props.user.name == "" ? User : props.user.name}</h6>
                                     </div>
                                 </button>
 
@@ -220,7 +238,12 @@ export default function Header(props) {
                                         </li>
                                         <li><hr className="my-1 border-gray-200" /></li>
                                         <li>
-                                            <a href="/sign-in" className="block px-4 py-2 text-red-500 hover:bg-gray-100">Logout</a>
+                                            <button
+                                            onClick={handleLogout}
+                                            className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                                            >
+                                            Logout
+                                            </button>
                                         </li>
                                     </ul>
                                 )}
