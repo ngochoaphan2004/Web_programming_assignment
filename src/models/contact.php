@@ -9,14 +9,23 @@ class Contact {
     }
 
     public function getAllContacts() {
-        $stmt = $this->db->query("SELECT * FROM contacts");
+        $stmt = $this->db->query("
+            SELECT contacts.*, faqs.answer, faqs.created_at AS faq_created_at
+            FROM contacts
+            LEFT JOIN faqs ON contacts.id_faq = faqs.id
+        ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getContactByEmail($email) {
-        $stmt = $this->db->prepare("SELECT * FROM contacts WHERE email = ?");
+        $stmt = $this->db->prepare("
+            SELECT contacts.*, faqs.answer, faqs.created_at AS faq_created_at
+            FROM contacts
+            LEFT JOIN faqs ON contacts.id_faq = faqs.id
+            WHERE contacts.email = ?
+        ");
         $stmt->execute([$email]);
-        $contact = $stmt->fetch(PDO::FETCH_ASSOC);
+        $contact = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         if ($contact === false) {
             return ['error' => 'Không tìm thấy email này', 'status' => 428];
@@ -100,6 +109,21 @@ class Contact {
         $result = $temp_stmt->execute([
             ':status' => 'replied',
             ':id_faq' => $faqId,
+            ':id' => $contact_id
+        ]);
+    
+        if ($result) {
+            return ['success' => true];
+        } else {
+            return ['error' => 'Lỗi khi cập nhật câu trả lời', 'status' => 500];
+        }
+    }
+
+    public function changeContact($contact_id, $status)  {
+
+        $temp_stmt = $this->db->prepare("UPDATE contacts SET status = :status WHERE id = :id");
+        $result = $temp_stmt->execute([
+            ':status' => $status,
             ':id' => $contact_id
         ]);
     
