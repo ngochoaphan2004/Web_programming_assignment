@@ -49,4 +49,15 @@ class ContactController {
             echo json_encode(["error" => "Thiếu ID hoặc câu trả lời"]);
         }
     }
+
+    public function changeStatus() {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (isset($data['id'], $data['status'])) {
+            $success = $this->contactModel->changeContact($data['id'], $data['status']);
+            echo json_encode(["success" => $success]);
+        } else {
+            echo json_encode(["error" => "Thiếu ID hoặc trang thai"]);
+        }
+    }
 }

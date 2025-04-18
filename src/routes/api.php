@@ -16,6 +16,11 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
 
+if ($requestMethod == 'OPTIONS') {
+    header("HTTP/1.1 204 No Content");
+    exit();
+}
+
 switch (true) {
     // USER
     case $uri === 'login' && $requestMethod === 'POST':
@@ -69,6 +74,11 @@ switch (true) {
     // POST /contacts/answer
     case $uri === 'contacts/answer' && $requestMethod === 'POST':
         $contactController->answerContact();
+        break;
+
+    // PUT /contacts
+    case $uri === 'contacts' && $requestMethod === 'PUT':
+        $contactController->changeStatus();
         break;
 
     default:
