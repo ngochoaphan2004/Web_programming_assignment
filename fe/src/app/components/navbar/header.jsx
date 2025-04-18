@@ -12,9 +12,9 @@ const UserNav = [
 ]
 
 const AdminNav = [
-    { url: "/admin/content", title: "Pages content", elementID: "content" },
-    { url: "/admin/contact", title: "Contact", elementID: "contact" },
     { url: "/admin/accounts", title: "Accounts", elementID: "accounts" },
+    { url: "/admin/content", title: "Content", elementID: "content" },
+    { url: "/admin/contact", title: "Contact", elementID: "contact" },
     { url: "/admin/products", title: "Products", elementID: "products" },
     { url: "/admin/receipts", title: "Receipts", elementID: "receipts" }
 ]
@@ -50,7 +50,7 @@ export default function Header(props) {
                     {props.admin ?
                         <>
                             <div className="logo flex">
-                                <a href="/" className="block">
+                                <a className="block">
                                     <img
                                         src="/logo.png"
                                         alt="Logo"
@@ -64,7 +64,7 @@ export default function Header(props) {
                                 <div className="container">
                                     <ul>
                                         {AdminNav.map((item, index) => (
-                                            <li key={index} id={item.elementID} className={`menu-item ${authenUrl === item.url ? 'active' :''}`}>
+                                            <li key={index} id={item.elementID} className={`menu-item ${authenUrl === item.url ? 'active' : ''}`}>
                                                 <a href={item.url} className='menu-link'>
                                                     <span>{item.title}</span>
                                                 </a>
@@ -89,7 +89,7 @@ export default function Header(props) {
                                 <div className="container">
                                     <ul>
                                         {UserNav.map((item, index) => (
-                                            <li key={index} id={item.elementID} className={`menu-item ${url === item.url ? 'active' :''}`}>
+                                            <li key={index} id={item.elementID} className={`menu-item ${url === item.url ? 'active' : ''}`}>
                                                 <a href={item.url} className='menu-link'>
                                                     <span>{item.title}</span>
                                                 </a>
@@ -151,7 +151,6 @@ export default function Header(props) {
                             </div>
                         )}
 
-
                         {/* <!-- Burger button responsive --> */}
                         <a href="#" className="burger-btn d-block d-xl-none" onClick={() => setSecondNB(prev => !prev)}>
                             <i className="bi bi-justify fs-3"></i>
@@ -164,7 +163,7 @@ export default function Header(props) {
                         {props.admin ?
                             <ul>
                                 {AdminNav.map((item, index) => (
-                                    <li key={index} id={item.elementID} className={`menu-item ${authenUrl === item.url ? 'active' :''}`}>
+                                    <li key={index} id={item.elementID} className={`menu-item ${authenUrl === item.url ? 'active' : ''}`}>
                                         <a href={item.url} className='menu-link'>
                                             <span>{item.title}</span>
                                         </a>
@@ -174,7 +173,7 @@ export default function Header(props) {
                             :
                             <ul>
                                 {UserNav.map((item, index) => (
-                                    <li key={index} id={item.elementID} className={`menu-item ${url === item.url ? 'active' :''}`}>
+                                    <li key={index} id={item.elementID} className={`menu-item ${url === item.url ? 'active' : ''}`}>
                                         <a href={item.url} className='menu-link'>
                                             <span>{item.title}</span>
                                         </a>

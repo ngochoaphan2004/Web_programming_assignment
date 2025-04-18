@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-
+import '../css.css'
 export default function CompanyInfoEditor() {
     const [companyInfo, setCompanyInfo] = useState({
         name: 'Công ty Shoes vietnam',
@@ -14,6 +14,7 @@ export default function CompanyInfoEditor() {
 
     const [logoPreview, setLogoPreview] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isHelper, setIsHelper] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -49,18 +50,27 @@ export default function CompanyInfoEditor() {
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold text-gray-800 mb-8 text-center">Cập nhật thông tin công ty</h1>
-            <p className="text-gray-700 text-lg mb-3 bg-gray-100 p-4 rounded-md shadow-sm">
-                Trang này cho phép bạn cập nhật thông tin cơ bản của công ty, bao gồm tên, địa chỉ, số điện thoại, email, logo và mô tả chi tiết. Hãy đảm bảo thông tin chính xác để hiển thị tốt nhất trên hệ thống.
-            </p>
-            <p className="text-gray-600 text-sm mb-3 bg-blue-50 p-3 rounded-md border-l-4 border-blue-400">
-                - Điền đầy đủ các trường thông tin bắt buộc.<br />
-                - Logo công ty nên có định dạng JPG hoặc PNG và kích thước không vượt quá 2MB.<br />
-                - Nhấn "Lưu thay đổi" để cập nhật thông tin.
-            </p>
-            <p className="text-gray-500 text-xs text-left italic bg-yellow-50 p-2 rounded-md border-l-4 border-yellow-400">
-                Lưu ý: Thông tin của bạn sẽ được bảo mật và chỉ sử dụng cho mục đích quản lý nội bộ.
-            </p>
+            <div className="flex gap-2">
+                <h2 className="text-2xl font-bold text-gray-800 mb-8 text-start">Cập nhật thông tin công ty</h2>
+                <button onClick={() => setIsHelper(prev => !prev)}>
+                    <i className="bi bi-question-octagon-fill self-center"></i>
+                </button>
+            </div>
+            {isHelper &&
+                <div className='overflow-y-auto fade-in'>
+                    <p className="text-gray-700 text-lg mb-3 bg-gray-100 p-4 rounded-md shadow-sm">
+                        Trang này cho phép bạn cập nhật thông tin cơ bản của công ty, bao gồm tên, địa chỉ, số điện thoại, email, logo và mô tả chi tiết. Hãy đảm bảo thông tin chính xác để hiển thị tốt nhất trên hệ thống.
+                    </p>
+                    <p className="text-gray-600 text-sm mb-3 bg-blue-50 p-3 rounded-md border-l-4 border-blue-400">
+                        - Điền đầy đủ các trường thông tin bắt buộc.<br />
+                        - Logo công ty nên có định dạng JPG hoặc PNG và kích thước không vượt quá 2MB.<br />
+                        - Nhấn "Lưu thay đổi" để cập nhật thông tin.
+                    </p>
+                    <p className="text-gray-500 text-xs text-left italic bg-yellow-50 p-2 rounded-md border-l-4 border-yellow-400">
+                        Lưu ý: Thông tin của bạn sẽ được bảo mật và chỉ sử dụng cho mục đích quản lý nội bộ.
+                    </p>
+                </div>
+            }
 
             <form onSubmit={handleSubmit} className="bg-white rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

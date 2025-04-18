@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axiosConfig from '../../../axiosConfig';
 
+import '../css.css'
+
 export default function CustomerFeedbackManager() {
     const [sourceList, setSourceList] = useState([]);
     const [feedbacks, setFeedbacks] = useState([]);
@@ -124,46 +126,8 @@ export default function CustomerFeedbackManager() {
 
     return (
         <div className="container mx-auto p-4">
-            <style jsx>{`
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes fadeOut {
-                    from { opacity: 1; transform: translateY(0); }
-                    to { opacity: 0; transform: translateY(10px); }
-                }
-                @keyframes slideIn {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-                .fade-in {
-                    animation: fadeIn 0.3s ease-out forwards;
-                }
-                .fade-out {
-                    animation: fadeOut 0.3s ease-out forwards;
-                }
-                .slide-in {
-                    animation: slideIn 0.3s ease-out forwards;
-                }
-                .spin {
-                    animation: spin 1s linear infinite;
-                }
-                .table-row {
-                    transition: all 0.3s ease;
-                }
-                .table-row:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                }
-            `}</style>
-
             <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold text-gray-800 mb-8 text-center">Quản lý phản hồi khách hàng</h1>
+                <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">Quản lý phản hồi khách hàng</h2>
                 <div className="flex justify-end font-sans">
                     <select
                         value={sortOption}
