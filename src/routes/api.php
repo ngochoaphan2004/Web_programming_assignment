@@ -17,6 +17,11 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
 
+if ($requestMethod == 'OPTIONS') {
+    header("HTTP/1.1 204 No Content");
+    exit();
+}
+
 switch (true) {
     // USER
     case $uri === 'user/login' && $requestMethod === 'POST':
@@ -87,6 +92,11 @@ switch (true) {
         break;
     case $uri === 'users/change-password' && $requestMethod === 'POST':
         $userController->changePassword();
+        break;
+
+    // PUT /contacts
+    case $uri === 'contacts' && $requestMethod === 'PUT':
+        $contactController->changeStatus();
         break;
 
     default:

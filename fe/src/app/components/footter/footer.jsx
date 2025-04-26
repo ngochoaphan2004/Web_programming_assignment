@@ -1,3 +1,6 @@
+import Link from 'next/link';
+
+
 export default function Footter() {
     return (
         <>
@@ -17,14 +20,10 @@ export default function Footter() {
                                 <p>Chính sách giao hàng</p>
                             </div>
                             <div>
-                                <p className="font-bold mb-2">Liên hệ với chúng tôi</p>
                                 <div className="flex space-x-4 mt-2">
-                                    <a href="#">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" className="w-6 h-6" alt="fb" />
-                                    </a>
-                                    <a href="#">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" className="w-6 h-6" alt="ig" />
-                                    </a>
+                                    <Link href="/help" className="hover:underline text-blue-400">
+                                        Liên hệ với chúng tôi
+                                    </Link>
                                 </div>
                             </div>
                         </div>

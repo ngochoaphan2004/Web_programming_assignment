@@ -1,8 +1,7 @@
 "use client"
 
-import {useState} from "react";
-import axios from "axios";
-
+import { useState } from "react";
+import axiosConfig from "@/axiosConfig";
 
 export default function SigninPage() {
   const [email, setEmail] = useState("");
@@ -17,28 +16,34 @@ export default function SigninPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const noSpecialCharRegex = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/;
+    const nameCharRegex = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/;
+    const userNameCharRegex = /^[a-zA-Z0-9\u00C0-\u1EF9]+$/;
+    const addressCharRegex = /^[a-zA-Z0-9\s,\u00C0-\u1EF9]+$/;
     const phoneRegex = /^\d{10}$/;
+
+    let errors = [];
+
     if (!email || !password || !confirm_password || !name || !username || !phone || !dob || !address) {
-      alert("All fields must be filled out.");
-      return;
+      errors.push("All fields must be filled out.");
     }
-    if (
-      !noSpecialCharRegex.test(name) ||
-      !noSpecialCharRegex.test(username) ||
-      !noSpecialCharRegex.test(address)
-    ) {
-      alert("Name, username, and address must not contain special characters." );
-      return;
+    if (name && !nameCharRegex.test(name)) {
+      errors.push("Name must not contain special characters.");
     }
-    if (!phoneRegex.test(phone)) {
-      alert("Phone number must contain exactly 10 digits.");
-      return;
+    if (username && !userNameCharRegex.test(username)) {
+      errors.push("Username must not contain spaces or special characters.");
+    }
+    if (address && !addressCharRegex.test(address)) {
+      errors.push("Address must not contain special characters (except comma).");
+    }
+    if (phone && !phoneRegex.test(phone)) {
+      errors.push("Phone number must contain exactly 10 digits.");
+    }
+    if (password && confirm_password && password !== confirm_password) {
+      errors.push("Password and confirm password do not match.");
     }
 
-
-    if (password !== confirm_password) {
-      alert("Password and confirm password do not match.");
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
       return;
     }
 
@@ -53,8 +58,8 @@ export default function SigninPage() {
       formData.append("dob", dob);
       formData.append("address", address);
 
-      const response = await axios.post(
-        "http://localhost:80/api/user/register",
+      const response = await axiosConfig.post(
+        "user/register",
         formData,
         {
           withCredentials: true,
@@ -85,97 +90,97 @@ export default function SigninPage() {
           <p className="auth-subtitle mb-5">Input your data to register to our website.</p>
 
           <form onSubmit={handleSubmit}>
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input
-              type="text"
-              className="form-control form-control-xl"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-envelope"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input
+                type="text"
+                className="form-control form-control-xl"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-envelope"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input type="text" className="form-control form-control-xl" placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-person-vcard"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input type="text" className="form-control form-control-xl" placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-person-vcard"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input type="text" className="form-control form-control-xl" placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-person"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input type="text" className="form-control form-control-xl" placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-person"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input type="password" className="form-control form-control-xl" placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-lock"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input type="password" className="form-control form-control-xl" placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-lock"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input type="password" className="form-control form-control-xl" placeholder="Confirm Password"
-              value={confirm_password}
-              onChange={(e) => setConfirm_password(e.target.value)}
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-lock-fill"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input type="password" className="form-control form-control-xl" placeholder="Confirm Password"
+                value={confirm_password}
+                onChange={(e) => setConfirm_password(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-lock-fill"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input
-              type="date"
-              className="form-control form-control-xl"
-              placeholder="Birthday"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)} 
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-calendar-date"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input
+                type="date"
+                className="form-control form-control-xl"
+                placeholder="Birthday"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-calendar-date"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input
-              type="text"
-              className="form-control form-control-xl"
-              placeholder="Phone Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)} 
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-telephone"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input
+                type="text"
+                className="form-control form-control-xl"
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-telephone"></i>
+              </div>
             </div>
-          </div>
 
-          <div className="form-group position-relative has-icon-left mb-4">
-            <input
-              type="text"
-              className="form-control form-control-xl"
-              placeholder="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)} 
-            />
-            <div className="form-control-icon">
-              <i className="bi bi-geo-alt"></i>
+            <div className="form-group position-relative has-icon-left mb-4">
+              <input
+                type="text"
+                className="form-control form-control-xl"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+              <div className="form-control-icon">
+                <i className="bi bi-geo-alt"></i>
+              </div>
             </div>
-          </div>
 
 
             <button className="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>

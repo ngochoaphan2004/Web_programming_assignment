@@ -27,7 +27,7 @@ export default function Home() {
         <h2 className="text-xl font-semibold border-b pb-2">Sản phẩm nổi bật</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div className="text-black" key={`popular-${i}`}>
+            <div className="text-black transition-transform duration-300 transform hover:scale-110 hover:shadow-2xl p-2 rounded-lg bg-white" key={`popular-${i}`}>
               <img src="ex_img.png" className="mx-auto" alt="shoe" />
               <p className="mt-2 text-sm" style={{
                 display: '-webkit-box',
@@ -62,7 +62,7 @@ export default function Home() {
         <h2 className="text-xl font-semibold border-b pb-2">Bán chạy</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div className="text-black" key={`popular-${i}`}>
+            <div className="text-black transition-transform duration-300 transform hover:scale-110 hover:shadow-2xl p-2 rounded-lg bg-white" key={`popular-${i}`}>
               <img src="ex_img.png" className="mx-auto" alt="shoe" />
               <p className="mt-2 text-sm" style={{
                 display: '-webkit-box',

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
+import axiosConfig from "@/axiosConfig";
 
 export default function SigninPage() {
   const [email, setEmail] = useState("");
@@ -10,13 +11,27 @@ export default function SigninPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let errors = [];
+
+    if (!email) {
+      errors.push("Vui lòng nhập email.");
+    }
+    if (!password) {
+      errors.push("Vui lòng nhập mật khẩu.");
+    }
+
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("password", password);
 
-      const response = await axios.post(
-        "http://localhost:80/api/user/login",
+      const response = await axiosConfig.post(
+        "/user/login",
         formData,
         {
           withCredentials: true,
@@ -30,16 +45,16 @@ export default function SigninPage() {
 
       if (response.data.success) {
         alert("Đăng nhập thành công");
-        if(response.data.user.role == 1)
-          window.location.href = "admin/accounts"
-        else
-          window.location.href = "/"; // điều hướng về trang chủ
+        // if (response.data.user.role == 1)
+        //   window.location.href = "admin/accounts";
+        // else
+        //   window.location.href = "/";
       } else {
-        alert("Sai thông tin đăng nhập");
+        alert("Sai thông tin đăng nhập.");
       }
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
-      alert("Lỗi đăng nhập");
+      alert("Đã xảy ra lỗi trong quá trình đăng nhập.");
     }
   };
 
