@@ -1,12 +1,13 @@
 <?php
 require_once '../controllers/user.php';
 require_once '../controllers/contact.php';
+require_once '../controllers/products.php';
 
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
 // $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$basePath = dirname($_SERVER['SCRIPT_NAME']);
+$basePath = dirname($_SERVER['SCRIPT_NAME']); 
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
 $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -16,6 +17,9 @@ $uri = trim($uri, '/');
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
+$productController = new ProductController();
+
+
 
 if ($requestMethod == 'OPTIONS') {
     header("HTTP/1.1 204 No Content");
@@ -85,6 +89,36 @@ switch (true) {
     case $uri === 'contacts' && $requestMethod === 'PUT':
         $contactController->changeStatus();
         break;
+
+// PRODUCTS
+
+case $uri === 'products' && $requestMethod === 'GET':
+    $productController->getAllProducts();
+    break;
+
+case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
+    $productController->getProductById($matches[1]);
+    break;
+
+case $uri === 'products/popular' && $requestMethod === 'GET':
+    $productController->getPopularProducts();
+    break;
+     
+case $uri === 'products/newest' && $requestMethod === 'GET':
+    $productController->getNewestProducts();
+    break;
+    
+case $uri === 'products' && $requestMethod === 'POST':
+    $productController->createProduct();
+    break;
+
+case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'POST':
+    $productController->updateProduct($matches[1]);
+    break;
+
+case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
+    $productController->deleteProduct($matches[1]);
+    break;
 
 
     // DEFAULT

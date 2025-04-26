@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import axiosConfig from "@/axiosConfig";
 
 export default function SigninPage() {
