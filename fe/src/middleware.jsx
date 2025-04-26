@@ -9,5 +9,5 @@ export function middleware(req) {
 }
 
 export const config = {
-    matcher: ['/profile'],
+    matcher: ['/profile', '/admin/:path*'],
 };
