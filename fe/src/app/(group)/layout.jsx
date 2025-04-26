@@ -1,55 +1,31 @@
-// "use client";
-
-// import "../globals.css";
-// import "../assets/app.css"
-// import "../assets/app-dark.css"
-// import "../assets/iconly.css"
-
-// import Header from "../components/navbar/header";
-// import Footter from "../components/footter/footer";
-
-// import Cookies from 'js-cookie';
-// import { useEffect, useState } from "react";
-
-// export default function RootLayout({ children }) {
-//   const [token, setToken] = useState()
-//   useEffect(() => {
-//     Cookies.get('auth_token')
-//   },[])
-//   return (
-//     <html lang="en" suppressHydrationWarning>
-//       <body>
-//         <div id="main" className="layout-horizontal">
-//           <Header authen={token ? true : false} />
-//           <div className="page-content container bg-white rounded-md">
-//             {children}
-//           </div>
-//           <Footter />
-//         </div>
-//       </body>
-//     </html>
-//   );
-// }
 "use client";
 
 import "../globals.css";
 import "../assets/app.css";
 import "../assets/app-dark.css";
 import "../assets/iconly.css";
-import {useState} from "react";
-import Header from "../components/navbar/header";
-import Footter from "../components/footter/footer";
+import { useState } from "react";
+import Header from "../../../components/navbar/header";
+import Footter from "../../../components/footter/footer";
 import { AuthProvider, useAuth } from "../contexts/auth"; // Đường dẫn đúng với bạn nhé
 
 function LayoutWithAuth({ children }) {
-  const { authen, loading, user ,admin} = useAuth();
+  const { authen, loading, user, admin } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>; // hoặc spinner đẹp hơn nếu có
+    return (
+      <div className="w-screen h-screen flex overflow-hidden flex-col gap-4 justify-center place-items-center  ">
+        <div className="w-fit h-fit p-20 gap-10 items-center justify-center  flex flex-col">
+          <div className="flex justify-center items-center h-full">
+            <div className="rounded-full h-20 w-20 bg-red-600 animate-ping"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
   return (
     <div id="main" className="layout-horizontal">
-      <Header authen={authen} user={user} admin = {admin} />
+      <Header authen={authen} user={user} admin={admin} />
       <div className="page-content container bg-white rounded-md">
         {children}
       </div>
@@ -60,12 +36,6 @@ function LayoutWithAuth({ children }) {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <AuthProvider>
-          <LayoutWithAuth>{children}</LayoutWithAuth>
-        </AuthProvider>
-      </body>
-    </html>
+    <LayoutWithAuth>{children}</LayoutWithAuth>
   );
 }
