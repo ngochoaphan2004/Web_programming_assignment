@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import axiosConfig from "@/axiosConfig";
 
 const UserNav = [
     { url: "/", title: "Home", elementID: "home" },
@@ -28,7 +29,7 @@ export default function Header(props) {
     const pathname = usePathname();
     const handleLogout = async () => {
         try {
-          const response = await axios.post("http://localhost:80/api/user/logout", {}, {
+          const response = await axiosConfig.post("/user/logout", {}, {
             withCredentials: true // Để gửi cookie (nếu dùng session PHP)
           });
     

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import axios from "axios";
+import axiosConfig from "@/axiosConfig";
 
 export default function Home() {
   /* --- state --- */
@@ -11,14 +12,12 @@ export default function Home() {
   /* --- load dữ liệu khi component mount --- */
   useEffect(() => {
     /* sản phẩm mới nhất */
-    axios
-      .get("http://localhost:80/api/products/newest")      // ← API mới
+    axiosConfig.get("/products/newest")      // ← API mới
       .then((res) => res.data.success && setNewestProducts(res.data.data))
       .catch((err) => console.error("Load newest:", err));
 
     /* sản phẩm bán chạy */
-    axios
-      .get("http://localhost:80/api/products/popular")     // ← đã có sẵn
+    axiosConfig.get("/products/popular")     // ← đã có sẵn
       .then((res) => res.data.success && setBestSellerProducts(res.data.data))
       .catch((err) => console.error("Load bestseller:", err));
   }, []);

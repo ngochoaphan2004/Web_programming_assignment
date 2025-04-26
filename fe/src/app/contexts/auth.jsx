@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import axiosConfig from "@/axiosConfig";
 
 // Tạo context
 const AuthContext = createContext();
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     console.log("Đang gọi API kiểm tra session...");
-    axios.get("http://localhost/api/user/session-check", {
+    axiosConfig.get("/user/session-check", {
       withCredentials: true, // Giống fetch: credentials: 'include'
     })
       .then((response) => {
