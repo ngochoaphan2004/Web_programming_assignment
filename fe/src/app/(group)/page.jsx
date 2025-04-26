@@ -26,8 +26,8 @@ export default function Home() {
   const ProductGrid = ({ data }) => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
       {data.map((p) => (
-        <div className="text-black" key={p.id}>
-          <img src={p.image || "/ex_img.png"} className="mx-auto" alt={p.name} />
+        <div className="text-black  transition-transform duration-300 transform hover:scale-110 hover:shadow-2xl p-2 rounded-lg bg-white" key={p.id}>
+          <img src={p.image || "/ex_img.png"} className="mx-auto  rounded-md" alt={p.name} />
           <p
             className="mt-2 text-sm line-clamp-2"
             /* tailwind line-clamp nếu có plugin; nếu không giữ inline-style như cũ */
