@@ -2,12 +2,13 @@
 require_once '../controllers/user.php';
 require_once '../controllers/contact.php';
 require_once '../controllers/products.php';
+require_once '../controllers/shop.php';
 
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
 // $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$basePath = dirname($_SERVER['SCRIPT_NAME']); 
+$basePath = dirname($_SERVER['SCRIPT_NAME']);
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
 $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -18,7 +19,7 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
 $productController = new ProductController();
-
+$shopController = new ShopController();
 
 
 if ($requestMethod == 'OPTIONS') {
@@ -90,36 +91,45 @@ switch (true) {
         $contactController->changeStatus();
         break;
 
-// PRODUCTS
+    // PRODUCTS
+    case $uri === 'products' && $requestMethod === 'GET':
+        $productController->getAllProducts();
+        break;
 
-case $uri === 'products' && $requestMethod === 'GET':
-    $productController->getAllProducts();
-    break;
+    case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $productController->getProductById($matches[1]);
+        break;
 
-case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
-    $productController->getProductById($matches[1]);
-    break;
+    case $uri === 'products/popular' && $requestMethod === 'GET':
+        $productController->getPopularProducts();
+        break;
 
-case $uri === 'products/popular' && $requestMethod === 'GET':
-    $productController->getPopularProducts();
-    break;
-     
-case $uri === 'products/newest' && $requestMethod === 'GET':
-    $productController->getNewestProducts();
-    break;
-    
-case $uri === 'products' && $requestMethod === 'POST':
-    $productController->createProduct();
-    break;
+    case $uri === 'products/newest' && $requestMethod === 'GET':
+        $productController->getNewestProducts();
+        break;
 
-case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'POST':
-    $productController->updateProduct($matches[1]);
-    break;
+    case $uri === 'products' && $requestMethod === 'POST':
+        $productController->createProduct();
+        break;
 
-case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
-    $productController->deleteProduct($matches[1]);
-    break;
+    case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'POST':
+        $productController->updateProduct($matches[1]);
+        break;
 
+    case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
+        $productController->deleteProduct($matches[1]);
+        break;
+
+    // SHOP INFOMATION
+    case $uri === 'shop/info' && $requestMethod === 'GET':
+        $shopController->getShopInfo();
+        break;
+    case $uri === 'shop/info/update' && $requestMethod === 'POST':
+        $shopController->updateShopInfo();
+        break;
+    case $uri === 'shop/info/logo' && $requestMethod === 'POST':
+        $shopController->changeLogo();
+        break;
 
     // DEFAULT
     default:
