@@ -164,7 +164,7 @@ function TempHeader(props) {
                                 {dropdown && (
                                     <ul className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
                                         <li>
-                                            <a href="#" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
+                                            <a href="/profile" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
                                         </li>
                                         <li>
                                             <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
@@ -189,7 +189,7 @@ function TempHeader(props) {
                         </a>
                     </div>
                 </div>
-
+                     
                 <nav id="second-navbar" className="main-navbar mt-2 hidden">
                     <div className="container">
                         {props.admin ?

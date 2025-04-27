@@ -32,10 +32,16 @@ export default function CompanyInfoEditor() {
     const handleConfirmSubmit = async () => {
         setIsSubmitting(true);
 
-        await axiosConfig.post('shop/info/update', { ...companyInfo })
+        await axiosConfig.post('shop/info/update', { ...companyInfo }, {
+            withCredentials: true,
+        })
             .then((response) => {
                 console.log(response);
-
+                if (!response.data.success) {
+                    setShowError(true)
+                    setIsSubmitting(false);
+                    return;
+                }
                 setIsSubmitting(false);
                 setShowSuccess(true);
             })

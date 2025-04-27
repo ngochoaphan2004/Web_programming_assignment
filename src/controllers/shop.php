@@ -4,13 +4,34 @@ require_once '../core/auth.php';
 require_once '../helpers/avatarHandle.php';
 class ShopController
 {
-    private $auth;
     private $shop;
 
     public function __construct()
     {
-        $this->auth = new AuthService();
         $this->shop = new Shop();
+    }
+
+    private function checkSess()
+    {
+        session_start();
+
+        if (isset($_SESSION['user_id'])) {
+            return [
+                "authenticated" => true,
+                "admin" => $_SESSION['role'] == 1,
+                "user" => [
+                    "id" => $_SESSION['user_id'],
+                    "name" => $_SESSION['name'],
+                    "email" => $_SESSION['email'],
+                    "role" => $_SESSION['role']
+                ]
+            ];
+        } else {
+            return [
+                "authenticated" => false,
+                "admin" => false
+            ];
+        }
     }
 
     public function getShopInfo()
@@ -22,39 +43,39 @@ class ShopController
     public function updateShopInfo()
     {
         // Authentication
-        $sessionInfo = $this->auth->checkSession();
-        if(!$sessionInfo['admin']){
+        $sessionInfo = $this->checkSess();
+        if ($sessionInfo['admin'] === false) {
             echo json_encode(["success" => false, "message" => "This api just user by admin"]);
             return;
         }
 
         $data = json_decode(file_get_contents("php://input"), true);
         $success = $this->shop->updateShopInfo($data);
-        echo json_encode(["success" => $success]);
+        echo json_encode(["success" => true, "data" => $success]);
     }
 
     public function deleteAddress()
     {
         // Authentication
-        $sessionInfo = $this->auth->checkSession();
-        if(!$sessionInfo['admin']){
+        $sessionInfo = $this->checkSess();
+        if (!$sessionInfo['admin']) {
             echo json_encode(["success" => false, "message" => "This api just user by admin"]);
             return;
         }
 
         $data = json_decode(file_get_contents("php://input"), true);
         $success = $this->shop->deleteAddress($data);
-        echo json_encode(["success" => $success]);
+        echo json_encode(["success" => true, "data" => $success]);
     }
 
     public function changeLogo()
     {
         // Authentication
-        $sessionInfo = $this->auth->checkSession();
-        if(!$sessionInfo['admin']){
+        $sessionInfo = $this->checkSess();
+        if (!$sessionInfo['admin']) {
             echo json_encode(["success" => false, "message" => "This api just user by admin"]);
             return;
-        }       
+        }
 
         $info = $this->shop->getShopInfo();
 
