@@ -4,7 +4,13 @@ import { useEffect } from "react";
 import UploadFileAvatar from "../../../../components/uploadAvatar/uploadAvatar";
 export default function ProfilePage() {
     useEffect(()=>{
-
+        async function fetchData() {
+            const res = await axiosConfig.get('user/session-check', {
+                withCredentials: true,
+            })
+            
+        }
+        fetchData()
     },[])
 
     return (
