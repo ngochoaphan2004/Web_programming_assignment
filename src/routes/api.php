@@ -77,6 +77,7 @@ switch (true) {
             $contactController->getAllContacts();
         }
         break;
+        
     case $uri === 'contacts' && $requestMethod === 'POST':
         $contactController->createContact();
         break;

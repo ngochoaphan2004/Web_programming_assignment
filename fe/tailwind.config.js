@@ -1,17 +1,15 @@
-const { colors } = require("./build/server/chunks/ssr/node_modules_0b681507._");
-
 // tailwind.config.js
 module.exports = {
   theme: {
     extend: {
+      colors: {
+        do_600: "#E53935",
+      },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out forwards',
         'slide-up': 'slideUp 0.4s ease-out forwards',
       },
       keyframes: {
-        colors: {
-          do_600: "#E53935",
-        },
         fadeIn: {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
