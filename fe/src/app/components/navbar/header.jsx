@@ -161,6 +161,9 @@ export default function Header(props) {
                                         <li>
                                             <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
                                         </li>
+                                        <li>
+                                            <a href="/cart" className="block px-4 py-2 hover:bg-gray-100">🛒 Giỏ hàng</a>
+                                        </li>
                                         <li><hr className="my-1 border-gray-200" /></li>
                                         <li>
                                             <button

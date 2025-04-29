@@ -4,6 +4,20 @@ import Carousel from "react-bootstrap/Carousel";
 import axios from "axios";
 import axiosConfig from "@/axiosConfig";
 
+const handleAddToCart = async (productId) => {
+  try {
+    const res = await axiosConfig.post("/cart/add", { product_id: productId, quantity: 1 });
+    if (res.data.success) {
+      alert("Đã thêm vào giỏ hàng!");
+    } else {
+      alert("Lỗi khi thêm vào giỏ!");
+    }
+  } catch (err) {
+    console.error("Cart add error:", err);
+    alert("Vui lòng đăng nhập để thêm sản phẩm!");
+  }
+};
+
 export default function Home() {
   /* --- state --- */
   const [newestProducts, setNewestProducts] = useState([]);
@@ -45,6 +59,13 @@ export default function Home() {
           <p className="font-bold">
             {Number(p.price).toLocaleString("vi-VN")}₫
           </p>
+          {/* Nút thêm vào giỏ */}
+          <button
+            onClick={() => handleAddToCart(p.id)}
+            className="mt-1 text-sm text-white bg-green-600 px-2 py-1 rounded hover:bg-green-700"
+          >
+            Thêm vào giỏ
+          </button>
         </div>
       ))}
     </div>

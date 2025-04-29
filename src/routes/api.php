@@ -2,7 +2,7 @@
 require_once '../controllers/user.php';
 require_once '../controllers/contact.php';
 require_once '../controllers/products.php';
-
+require_once '../controllers/CartController.php';
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
@@ -18,7 +18,7 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
 $productController = new ProductController();
-
+$cartController = new CartController();
 
 
 if ($requestMethod == 'OPTIONS') {
@@ -132,6 +132,25 @@ switch (true) {
         $productController->getAllProductsGrouped();
         break;
         
+    /* lấy giỏ */
+    case $uri === 'cart' && $requestMethod === 'GET':
+        $cartController->getCart();
+        break;
+
+    /* thêm sp vào giỏ */
+    case $uri === 'cart/add' && $requestMethod === 'POST':
+        $cartController->add();
+        break;
+
+    /* cập nhật số lượng */
+    case preg_match('/^cart\\/item\\/(\\d+)$/',$uri,$m) && $requestMethod === 'POST':
+        $cartController->updateItem($m[1]);
+        break;
+
+    /* xoá item */
+    case preg_match('/^cart\\/item\\/(\\d+)$/',$uri,$m) && $requestMethod === 'DELETE':
+        $cartController->deleteItem($m[1]);
+        break;
     // DEFAULT
     default:
         http_response_code(404);
