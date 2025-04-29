@@ -90,37 +90,48 @@ switch (true) {
         $contactController->changeStatus();
         break;
 
-// PRODUCTS
+    // PRODUCTS
 
-case $uri === 'products' && $requestMethod === 'GET':
-    $productController->getAllProducts();
-    break;
+    case $uri === 'products' && $requestMethod === 'GET':
+        $productController->getAllProducts();
+        break;
 
-case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
-    $productController->getProductById($matches[1]);
-    break;
+    case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $productController->getProductById($matches[1]);
+        break;
 
-case $uri === 'products/popular' && $requestMethod === 'GET':
-    $productController->getPopularProducts();
-    break;
-     
-case $uri === 'products/newest' && $requestMethod === 'GET':
-    $productController->getNewestProducts();
-    break;
+    case $uri === 'products/popular' && $requestMethod === 'GET':
+        $productController->getPopularProducts();
+        break;
+        
+    case $uri === 'products/newest' && $requestMethod === 'GET':
+        $productController->getNewestProducts();
+        break;
+        
+    case $uri === 'products' && $requestMethod === 'POST':
+        $productController->createProduct();
+        break;
+
+    case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'POST':
+        $productController->updateProduct($matches[1]);
+        break;
+
+    case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
+        $productController->deleteProduct($matches[1]);
+        break;
+
+    case preg_match('/^products\/category\/(.+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $productController->getProductsByCategory($matches[1]);
+        break;
     
-case $uri === 'products' && $requestMethod === 'POST':
-    $productController->createProduct();
-    break;
-
-case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'POST':
-    $productController->updateProduct($matches[1]);
-    break;
-
-case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
-    $productController->deleteProduct($matches[1]);
-    break;
-
-
+    case preg_match('/^products\/category\/(.+)\/paginate$/', $uri, $matches) && $requestMethod === 'GET':
+        $productController->getProductsByCategoryPaginated($matches[1]);
+        break;
+    
+    case $uri === 'products/grouped' && $requestMethod === 'GET':
+        $productController->getAllProductsGrouped();
+        break;
+        
     // DEFAULT
     default:
         http_response_code(404);

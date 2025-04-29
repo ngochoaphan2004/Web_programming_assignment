@@ -78,37 +78,72 @@ class ProductController {
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             return;
         }
-
-        $name = trim($_POST['name'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $price = floatval($_POST['price'] ?? 0);
-        $stock = intval($_POST['stock'] ?? 0);
-        $imagePath = $_POST['old_image'] ?? null;
-
+    
+        $productModel = new Product();
+        $product = $productModel->getProductById($id);
+        if (!$product) {
+            echo json_encode(["success" => false, "message" => "Product not found"]);
+            return;
+        }
+    
+        // Lấy dữ liệu từ form
+        $name        = $_POST['name']        ?? $product['name'];
+        $description = $_POST['description'] ?? $product['description'];
+        $price       = $_POST['price']       ?? $product['price'];
+        $stock       = $_POST['stock']       ?? $product['stock'];
+        $imagePath   = $_POST['image_url']   ?? $product['image'];  // lấy link nếu có
+    
+        // Nếu có upload ảnh mới → ưu tiên ảnh file
         if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
             $uploadDir = 'uploads/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
-
+    
             $file = $_FILES['image'];
             $fileName = uniqid() . '-' . basename($file['name']);
             $targetPath = $uploadDir . $fileName;
-
+    
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                 $imagePath = $targetPath;
             }
         }
-
-        $productModel = new Product();
-        $result = $productModel->update($id, $name, $description, $price, $imagePath, $stock);
-
-        if ($result) {
-            echo json_encode(["success" => true, "message" => "Product updated successfully"]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Failed to update product"]);
-        }
+    
+        $success = $productModel->update($id, $name, $description, $price, $imagePath, $stock);
+        echo json_encode(["success" => $success]);
     }
+    
+
+    // Lấy sản phẩm theo danh mục
+    public function getProductsByCategory($category) {
+        $productModel = new Product();
+        $products = $productModel->getProductsByCategory($category);
+        echo json_encode(["success" => true, "data" => $products]);
+    }
+    
+    // Lấy sản phẩm theo danh mục với phân trang
+    public function getProductsByCategoryPaginated($category) {
+        $limit  = $_GET['limit']  ?? 5;
+        $page   = $_GET['page']   ?? 1;
+        $offset = ($page - 1) * $limit;
+    
+        $productModel = new Product();
+        $products = $productModel->getProductsByCategoryWithLimit($category, $limit, $offset);
+        echo json_encode(["success" => true, "data" => $products]);
+    }
+    
+    // Lấy toàn bộ sản phẩm – lần này không phân trang
+    public function getAllProductsGrouped() {
+        $productModel = new Product();
+        $categories = ['sneaker','sandal','balo','phukien'];
+
+        $result = [];
+        foreach ($categories as $cat) {
+            $result[$cat] = $productModel->getProductsByCategory($cat);
+        }
+        echo json_encode(["success" => true, "data" => $result]);
+    }
+
 
     // Xoá sản phẩm
     public function deleteProduct($id) {

@@ -132,6 +132,40 @@ class Product {
         return $stmt->execute([':id' => $id, ':stock' => $stock]);
     }
 
+    //** Lấy sản phẩm theo danh mục  */
+    public function getProductsByCategory(string $category) {
+        $stmt = $this->db->prepare("
+            SELECT * FROM products
+            WHERE category = :category
+            ORDER BY created_at DESC
+        ");
+        $stmt->bindValue(':category', $category);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    
+    /** Lấy sản phẩm theo danh mục với phân trang  */
+    public function getProductsByCategoryWithLimit(string $category, int $limit = 5, int $offset = 0) {
+        $sql = "
+            SELECT * FROM products
+            WHERE category = :category
+            ORDER BY created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);  
+    }
+    
+    
+    
+    
+    
+
     /* -------------------------------------------------
      * 4. XOÁ
      * -------------------------------------------------*/
