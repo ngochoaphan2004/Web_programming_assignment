@@ -8,7 +8,7 @@ class OrderModel {
         $this->db = Database::getInstance();
     }
 
-    /* lấy đơn “pending” hiện tại, nếu chưa có thì tạo mới */
+    /* lấy đơn "pending" hiện tại, nếu chưa có thì tạo mới */
     public function getOrCreatePendingOrder(int $userId): int {
         $stmt = $this->db->prepare("SELECT id FROM orders WHERE user_id = ? AND status = 'pending'");
         $stmt->execute([$userId]);
@@ -29,6 +29,25 @@ class OrderModel {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /* Lấy đơn hàng của user (không bao gồm pending) */
+    public function getUserOrders(int $userId): array {
+        $stmt = $this->db->prepare("
+            SELECT id, user_id, total_price, status, created_at, updated_at 
+            FROM orders 
+            WHERE user_id = ? AND status != 'pending' 
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /* Kiểm tra người sở hữu đơn hàng */
+    public function getOrderOwner(int $orderId): ?int {
+        $stmt = $this->db->prepare("SELECT user_id FROM orders WHERE id = ?");
+        $stmt->execute([$orderId]);
+        return (int)($stmt->fetchColumn() ?? 0);
     }
 
     /* thêm / tăng số lượng 1 sản phẩm */
@@ -73,5 +92,47 @@ class OrderModel {
         $total = $sum->fetchColumn();
         $this->db->prepare("UPDATE orders SET total_price = ? WHERE id = ?")
                  ->execute([$total,$orderId]);
+    }
+
+    public function getAllOrders(): array {
+        $sql = "SELECT o.*, u.name, u.address, u.phone
+                FROM orders o
+                JOIN users u ON u.id = o.user_id
+                ORDER BY o.created_at DESC";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getItemsByOrder(int $orderId): array {
+        $sql = "SELECT oi.id, oi.product_id, p.name, p.image, oi.quantity, oi.price
+                FROM order_items oi
+                JOIN products p ON p.id = oi.product_id
+                WHERE oi.order_id = ?";
+        $st = $this->db->prepare($sql);
+        $st->execute([$orderId]);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /* đổi trạng thái */
+    public function updateStatus(int $orderId, string $status): bool {
+        // Debug
+        error_log("OrderModel::updateStatus - orderId: $orderId, status: $status");
+        
+        // Xác nhận đơn hàng tồn tại trước khi cập nhật
+        $checkStmt = $this->db->prepare("SELECT id FROM orders WHERE id = ?");
+        $checkStmt->execute([$orderId]);
+        if (!$checkStmt->fetch()) {
+            error_log("OrderModel::updateStatus - Đơn hàng không tồn tại: $orderId");
+            return false;
+        }
+        
+        // Cập nhật trạng thái và thêm thời gian cập nhật
+        $stmt = $this->db->prepare("UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ?");
+        $result = $stmt->execute([$status, $orderId]);
+        
+        // Kiểm tra số dòng được cập nhật
+        $rowCount = $stmt->rowCount();
+        error_log("OrderModel::updateStatus - Kết quả: " . ($result ? "true" : "false") . ", Số dòng cập nhật: $rowCount");
+        
+        return $result && $rowCount > 0;
     }
 }

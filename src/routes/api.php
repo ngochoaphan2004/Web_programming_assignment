@@ -3,6 +3,7 @@ require_once '../controllers/user.php';
 require_once '../controllers/contact.php';
 require_once '../controllers/products.php';
 require_once '../controllers/CartController.php';
+require_once '../controllers/OrderController.php';
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
@@ -19,6 +20,7 @@ $userController = new UserController();
 $contactController = new ContactController();
 $productController = new ProductController();
 $cartController = new CartController();
+$orderController = new OrderController();
 
 
 if ($requestMethod == 'OPTIONS') {
@@ -150,6 +152,39 @@ switch (true) {
     /* xoá item */
     case preg_match('/^cart\\/item\\/(\\d+)$/',$uri,$m) && $requestMethod === 'DELETE':
         $cartController->deleteItem($m[1]);
+        break;
+
+    /* ============ ADMIN ============ */
+    case $uri === 'orders' && $requestMethod === 'GET':
+        $orderController->index();            // danh sách
+        break;
+
+    case preg_match('/^orders\\/(\\d+)\\/status$/',$uri,$m) && $requestMethod === 'POST':
+        $orderController->updateStatus($m[1]);
+        break;
+
+    case preg_match('/^orders\\/(\\d+)\\/item\\/(\\d+)$/',$uri,$m) && $requestMethod === 'POST':
+        $orderController->updateItem($m[1],$m[2]);
+        break;
+
+    case preg_match('/^orders\\/(\\d+)\\/item\\/(\\d+)$/',$uri,$m) && $requestMethod === 'DELETE':
+        $orderController->deleteItem($m[1],$m[2]);
+        break;
+
+    /* ============ USER ============ */
+    case preg_match('/^orders\\/(\\d+)\\/pay$/',$uri,$m) && $requestMethod === 'POST':
+        $orderController->pay($m[1]);
+        break;
+
+
+
+
+
+
+
+
+    case $uri === 'user/orders' && $requestMethod === 'GET':
+        $orderController->getUserOrders();
         break;
     // DEFAULT
     default:
