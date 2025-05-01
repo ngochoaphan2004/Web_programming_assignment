@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "@/axiosConfig"; // axios instance with baseURL and withCredentials
-
+import axiosConfig from "@/axiosConfig";
 export default function CartPage() {
   const [pendingItems, setPendingItems] = useState([]); // Current cart items
   const [pendingOrderId, setPendingOrderId] = useState(null);
@@ -12,7 +12,7 @@ export default function CartPage() {
   // Gửi yêu cầu thanh toán (đổi trạng thái đơn => processing)
   const handlePay = async () => {
     try {
-      const res = await axios.post(`/orders/${pendingOrderId}/pay`);
+      const res = await axiosConfig.post(`/orders/${pendingOrderId}/pay`);
       if (res.data.success) {
         alert("Đã gửi đơn! Shop sẽ xử lý sớm.");
         fetchOrders(); // Reload both cart and active orders
@@ -34,14 +34,14 @@ export default function CartPage() {
     try {
       setLoading(true);
       // Fetch pending cart
-      const cartRes = await axios.get("/cart");
+      const cartRes = await axiosConfig.get("/cart");
       if (cartRes.data.success) {
         setPendingOrderId(cartRes.data.data.order_id);
         setPendingItems(cartRes.data.data.items);
       }
 
       // Fetch user's active orders
-      const ordersRes = await axios.get("/user/orders");
+      const ordersRes = await axiosConfig.get("/user/orders");
       if (ordersRes.data.success) {
         setActiveOrders(ordersRes.data.data);
       }
@@ -57,7 +57,7 @@ export default function CartPage() {
   const updateQty = async (itemId, qty) => {
     qty = Math.max(1, qty);
     try {
-      await axios.post(`/cart/item/${itemId}`, { quantity: qty });
+      await axiosConfig.post(`/cart/item/${itemId}`, { quantity: qty });
       setPendingItems(prev => prev.map(i => (i.id === itemId ? { ...i, quantity: qty } : i)));
     } catch (err) {
       console.error(err);
@@ -68,7 +68,7 @@ export default function CartPage() {
   const deleteItem = async (itemId) => {
     if (!confirm("Xoá sản phẩm khỏi giỏ?")) return;
     try {
-      await axios.delete(`/cart/item/${itemId}`);
+      await axiosConfig.delete(`/cart/item/${itemId}`);
       setPendingItems(prev => prev.filter(i => i.id !== itemId));
     } catch (err) {
       console.error(err);

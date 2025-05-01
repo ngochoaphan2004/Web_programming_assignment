@@ -41,10 +41,14 @@ export default function Home() {
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
       {data.map((p) => (
         <div className="text-black" key={p.id}>
-          <img src={p.image || "/ex_img.png"} className="mx-auto" alt={p.name} />
+        <a href={`/product/${p.id}`}>
+          <img
+            src={p.image || "/ex_img.png"}
+            className="mx-auto"
+            alt={p.name}
+          />
           <p
             className="mt-2 text-sm line-clamp-2"
-            /* tailwind line-clamp nếu có plugin; nếu không giữ inline-style như cũ */
             style={{
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
@@ -56,17 +60,18 @@ export default function Home() {
           >
             {p.name}
           </p>
-          <p className="font-bold">
-            {Number(p.price).toLocaleString("vi-VN")}₫
-          </p>
-          {/* Nút thêm vào giỏ */}
-          <button
-            onClick={() => handleAddToCart(p.id)}
-            className="mt-1 text-sm text-white bg-green-600 px-2 py-1 rounded hover:bg-green-700"
-          >
-            Thêm vào giỏ
-          </button>
-        </div>
+        </a>
+        <p className="font-bold">
+          {Number(p.price).toLocaleString("vi-VN")}₫
+        </p>
+        {/* Nút thêm vào giỏ */}
+        <button
+          onClick={() => handleAddToCart(p.id)}
+          className="mt-1 text-sm text-white bg-green-600 px-2 py-1 rounded hover:bg-green-700"
+        >
+          Thêm vào giỏ
+        </button>
+      </div>      
       ))}
     </div>
   );

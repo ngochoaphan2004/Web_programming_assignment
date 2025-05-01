@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "@/axiosConfig";
-
+import axiosConfig from "@/axiosConfig";
 const statusOptions = ["pending", "processing", "completed", "cancel"];
 const statusTranslations = {
   "pending": "Chờ thanh toán",
@@ -24,7 +24,7 @@ export default function ReceiptsPage() {
       setLoading(true);
       setError(null);
       
-      const res = await axios.get("/orders");
+      const res = await axiosConfig.get("/orders");
       if (res.data.success) {
         setOrders(res.data.data);
       } else {
@@ -42,7 +42,7 @@ export default function ReceiptsPage() {
     try {
       console.log(`Saving status for order ${id}: ${status}`);
       
-      const res = await axios.post(`/orders/${id}/status`, { status });
+      const res = await axiosConfig.post(`/orders/${id}/status`, { status });
       console.log("Status update response:", res.data);
       
       if (res.data.success) {
@@ -61,7 +61,7 @@ export default function ReceiptsPage() {
   const updateQty = async (orderId, itemId, qty) => {
     try {
       qty = Math.max(1, parseInt(qty) || 1);
-      await axios.post(`/orders/${orderId}/item/${itemId}`, { quantity: qty });
+      await axiosConfig.post(`/orders/${orderId}/item/${itemId}`, { quantity: qty });
       await load(); // Reload all data to ensure everything is synced
     } catch (err) {
       console.error("Error updating quantity:", err);
@@ -73,7 +73,7 @@ export default function ReceiptsPage() {
     if (!confirm("Xoá sản phẩm này?")) return;
     
     try {
-      await axios.delete(`/orders/${orderId}/item/${itemId}`);
+      await axiosConfig.delete(`/orders/${orderId}/item/${itemId}`);
       await load(); // Reload all data
     } catch (err) {
       console.error("Error deleting item:", err);

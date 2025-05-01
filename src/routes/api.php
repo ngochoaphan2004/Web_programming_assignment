@@ -93,43 +93,43 @@ switch (true) {
         break;
 
     // PRODUCTS
-
+    // lấy tất cả sản phẩm
     case $uri === 'products' && $requestMethod === 'GET':
         $productController->getAllProducts();
         break;
-
+    // lấy sản phẩm theo id
     case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
         $productController->getProductById($matches[1]);
         break;
-
+    // lấy sản phẩm được mua nhiều nhất
     case $uri === 'products/popular' && $requestMethod === 'GET':
         $productController->getPopularProducts();
         break;
-        
+    // lấy sản phẩm mới nhất
     case $uri === 'products/newest' && $requestMethod === 'GET':
         $productController->getNewestProducts();
         break;
-        
+    // Tạo sản phẩm mới
     case $uri === 'products' && $requestMethod === 'POST':
         $productController->createProduct();
         break;
-
+    // Cập nhật sản phẩm
     case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'POST':
         $productController->updateProduct($matches[1]);
         break;
-
+    // Xoá sản phẩm
     case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
         $productController->deleteProduct($matches[1]);
         break;
-
+    // Lấy sản phẩm theo danh mục
     case preg_match('/^products\/category\/(.+)$/', $uri, $matches) && $requestMethod === 'GET':
         $productController->getProductsByCategory($matches[1]);
         break;
-    
+    // Lấy sản phẩm theo danh mục với phân trang
     case preg_match('/^products\/category\/(.+)\/paginate$/', $uri, $matches) && $requestMethod === 'GET':
         $productController->getProductsByCategoryPaginated($matches[1]);
         break;
-    
+    // Lấy toàn bộ sản phẩm – lần này không phân trang   
     case $uri === 'products/grouped' && $requestMethod === 'GET':
         $productController->getAllProductsGrouped();
         break;
@@ -182,7 +182,7 @@ switch (true) {
 
 
 
-
+    // lấy sản phẩm mà user đó order
     case $uri === 'user/orders' && $requestMethod === 'GET':
         $orderController->getUserOrders();
         break;

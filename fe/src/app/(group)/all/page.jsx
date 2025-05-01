@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import axiosConfig from "@/axiosConfig";
 const categories = [
   { key: "sneaker", label: "Sneaker" },
   { key: "sandal", label: "Sandal" },
@@ -19,7 +19,7 @@ export default function AllProductsPage() {
 
   const loadProducts = async (category, page) => {
     try {
-      const res = await axios.get(`http://localhost:80/api/products/category/${category}/paginate?limit=5&page=${page}`);
+      const res = await axiosConfig.get(`http://localhost:80/api/products/category/${category}/paginate?limit=5&page=${page}`);
       if (res.data.success) {
         setProductsByCategory((prev) => ({ ...prev, [category]: res.data.data }));
         setPageByCategory((prev) => ({ ...prev, [category]: page }));

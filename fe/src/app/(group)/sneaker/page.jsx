@@ -8,7 +8,7 @@ export default function SneakerPage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    axios
+    axiosConfig
       .get("http://localhost:80/api/products/category/sneaker")
       .then((res) => {
         if (res.data.success) setProducts(res.data.data);
