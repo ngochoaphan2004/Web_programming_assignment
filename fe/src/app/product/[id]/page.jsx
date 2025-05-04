@@ -260,7 +260,8 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "@/axiosConfig";
-
+import axiosConfig from "@/axiosConfig";
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -276,7 +277,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await axios.get(`/products/${id}`);
+        const res = await axiosConfig.get(`/products/${id}`);
         if (res.data.success) setProduct(res.data.data);
         else router.push("/");
       } catch (err) {
@@ -303,7 +304,7 @@ export default function ProductDetailPage() {
     
     setAddingToCart(true);
     try {
-      const res = await axios.post("/cart/add", {
+      const res = await axiosConfig.post("/cart/add", {
         product_id: product.id,
         quantity: quantity,
       });
@@ -370,7 +371,7 @@ export default function ProductDetailPage() {
             <div className="p-6 flex items-center justify-center bg-gray-50">
               <div className="relative w-full aspect-square overflow-hidden rounded-lg">
                 <img
-                  src={product.image || "/ex_img.png"}
+                  src={product.image ? HOST + product.image : "/ex_img.png"}
                   alt={product.name}
                   className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
                 />

@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import axios from "@/axiosConfig";
 import axiosConfig from "@/axiosConfig";
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
+
 const statusOptions = ["pending", "processing", "completed", "cancel"];
 const statusTranslations = {
   "pending": "Chờ thanh toán",
@@ -149,7 +151,7 @@ export default function ReceiptsPage() {
                     <td className="p-2 text-center">{it.id}</td>
                     <td className="p-2 flex items-center gap-2">
                       <img 
-                        src={it.image || "/ex_img.png"} 
+                        src={it.image ? HOST + it.image : "/ex_img.png"} 
                         alt={it.name} 
                         className="h-10 w-10 object-cover rounded" 
                       />

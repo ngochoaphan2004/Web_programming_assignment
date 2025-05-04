@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import axios from "@/axiosConfig"; // axios instance with baseURL and withCredentials
 import axiosConfig from "@/axiosConfig";
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
+
 export default function CartPage() {
   const [pendingItems, setPendingItems] = useState([]); // Current cart items
   const [pendingOrderId, setPendingOrderId] = useState(null);
@@ -102,7 +104,7 @@ export default function CartPage() {
               {pendingItems.map(it => (
                 <tr key={it.id} className="border-b">
                   <td className="p-2 flex items-center gap-2">
-                    <img src={it.image || "/ex_img.png"} alt="img" className="h-12 w-12 object-cover" />
+                    <img src={it.image ? HOST + it.image : "/ex_img.png"} alt="img" className="h-12 w-12 object-cover" />
                     <span>{it.name}</span>
                   </td>
 
@@ -196,7 +198,7 @@ export default function CartPage() {
                     {order.items.map(item => (
                       <tr key={item.id} className="border-b">
                         <td className="p-2 flex items-center gap-2">
-                          <img src={item.image || "/ex_img.png"} alt="img" className="h-12 w-12 object-cover" />
+                          <img src={item.image ? HOST + item.image : "/ex_img.png"} alt="img" className="h-12 w-12 object-cover" />
                           <span>{item.name}</span>
                         </td>
                         <td className="p-2">{Number(item.price).toLocaleString("vi-VN")}₫</td>

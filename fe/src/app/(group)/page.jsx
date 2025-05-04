@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import axios from "axios";
 import axiosConfig from "@/axiosConfig";
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
 
 const handleAddToCart = async (productId) => {
   try {
@@ -43,7 +44,7 @@ export default function Home() {
         <div className="text-black" key={p.id}>
         <a href={`/product/${p.id}`}>
           <img
-            src={p.image || "/ex_img.png"}
+            src={p.image ? HOST + p.image : "/ex_img.png"}
             className="mx-auto"
             alt={p.name}
           />

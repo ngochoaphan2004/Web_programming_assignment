@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "@/axiosConfig";              // baseURL = http://localhost:80/api
-
+import AddProductForm from "./AddProductForm";
 /* 4 loại sản phẩm (khớp cột category) */
 const categories = [
   { key: "sneaker", label: "Sneaker" },
@@ -12,7 +12,7 @@ const categories = [
 
 /* ───────────────────────────────────────── */
 /* 1. Component 1 hàng sản phẩm (giữ state cục bộ) */
-const ProductRow = ({ prod, onSaved }) => {
+const ProductRow = ({ prod, onSaved, onDeleted, toast }) => {
   const [form, setForm] = useState({
     name:        prod.name,
     description: prod.description,
@@ -41,12 +41,24 @@ const ProductRow = ({ prod, onSaved }) => {
       });
 
       onSaved({ ...prod, ...form });                 // báo lên component cha
-      alert("Saved!");
+      toast("Đã lưu sản phẩm!");
     } catch (err) {
       console.error(err);
-      alert("Save error");
+      toast("Lỗi khi lưu!", "bg-red-600");
     } finally {
       setSaving(false);
+    }
+  };
+  
+  const handleDelete = async () => {
+    if (!confirm("Xoá sản phẩm này?")) return;
+    try {
+      await axios.delete(`/products/${prod.id}`);
+      onDeleted(prod.id);               // báo trang cha xoá khỏi list
+      toast("Đã xoá sản phẩm!");
+    } catch (err) {
+      console.error(err);
+      toast("Lỗi xoá!", "bg-red-600");
     }
   };
 
@@ -122,14 +134,21 @@ const ProductRow = ({ prod, onSaved }) => {
         />
       </td>
 
-      {/* Save */}
+      {/* Modify */}
       <td className="p-2">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-blue-600 text-white text-sm px-2 py-1 rounded"
+          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded"
         >
           {saving ? "..." : "Save"}
+        </button>
+        {/*  NÚT XOÁ */}
+        <button
+          onClick={handleDelete}
+          className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded"
+        >
+          Xoá
         </button>
       </td>
     </tr>
@@ -138,35 +157,111 @@ const ProductRow = ({ prod, onSaved }) => {
 
 /* ───────────────────────────────────────── */
 /* 2. Trang Products (Admin) */
-export default function AdminProducts() {
-  const [products, setProducts] = useState({});   // { sneaker:[...], sandal:[...], ... }
+// export default function AdminProducts() {
+//   const [products, setProducts] = useState({});   // { sneaker:[...], sandal:[...], ... }
 
-  /* load danh sách 1 lần */
-  useEffect(() => {
-    axios
-      .get("/products/grouped")
+//   /* load danh sách 1 lần */
+//   useEffect(() => {
+//     axios
+//       .get("/products/grouped")
+//       .then(res => res.data.success && setProducts(res.data.data))
+//       .catch(err => console.error("Load products:", err));
+//   }, []);
+
+//   /* cập nhật khi 1 hàng save xong */
+//   const handleRowSaved = (cat, updated) => {
+//     setProducts(prev => ({
+//       ...prev,
+//       [cat]: prev[cat].map(p => (p.id === updated.id ? updated : p)),
+//     }));
+//   };
+
+//   return (
+//     <div className="px-4 py-6">
+//       <h1 className="text-2xl font-bold mb-6">Products (Admin)</h1>
+
+//       {categories.map(({ key, label }) => (
+//         <div key={key} className="mb-10">
+//           <h2 className="text-lg font-semibold mb-2">{label}</h2>
+
+//           <div className="overflow-x-auto">
+//             <table className="min-w-[900px] w-full text-xs">
+//               <thead className="bg-gray-100 text-left">
+//                 <tr>
+//                   <th className="p-2">ID</th>
+//                   <th className="p-2">Name</th>
+//                   <th className="p-2">Description</th>
+//                   <th className="p-2">Price</th>
+//                   <th className="p-2">Stock</th>
+//                   <th className="p-2">Image</th>
+//                   <th className="p-2" />
+//                 </tr>
+//               </thead>
+
+//               <tbody>
+//                 {(products[key] || []).map(prod => (
+//                   <ProductRow
+//                     key={prod.id}
+//                     prod={prod}
+//                     onSaved={upd => handleRowSaved(key, upd)}
+//                   />
+//                 ))}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
+
+
+
+
+
+export default function ProductsAdmin() {
+  const [products, setProducts] = useState({});
+  const [toast, setToast] = useState(null); // { msg, color }
+
+  const showToast = (msg, color = "bg-green-600") => {
+    setToast({ msg, color });
+    setTimeout(() => setToast(null), 2000); // Tự ẩn sau 2 giây
+  };
+
+  const load = () => {
+    axios.get("/products/grouped")
       .then(res => res.data.success && setProducts(res.data.data))
-      .catch(err => console.error("Load products:", err));
-  }, []);
+      .catch(err => console.error(err));
+  };
+  useEffect(() => { load(); }, []);
 
-  /* cập nhật khi 1 hàng save xong */
-  const handleRowSaved = (cat, updated) => {
+  const handleRowSaved = (cat, upd) =>
     setProducts(prev => ({
       ...prev,
-      [cat]: prev[cat].map(p => (p.id === updated.id ? updated : p)),
+      [cat]: prev[cat].map(p => (p.id === upd.id ? upd : p)),
     }));
-  };
+
+  /* xoá khỏi state khi backend xoá thành công */
+  const handleRowDeleted = (idCat, prodId) =>
+    setProducts(prev => ({
+      ...prev,
+      [idCat]: prev[idCat].filter(p => p.id !== prodId),
+    }));
 
   return (
     <div className="px-4 py-6">
       <h1 className="text-2xl font-bold mb-6">Products (Admin)</h1>
 
+      {/* FORM THÊM SẢN PHẨM */}
+      <AddProductForm onAdded={load} />
+
+      {/* BẢNG TỪNG LOẠI */}
       {categories.map(({ key, label }) => (
         <div key={key} className="mb-10">
           <h2 className="text-lg font-semibold mb-2">{label}</h2>
-
           <div className="overflow-x-auto">
             <table className="min-w-[900px] w-full text-xs">
+              {/* thead giữ nguyên */}
               <thead className="bg-gray-100 text-left">
                 <tr>
                   <th className="p-2">ID</th>
@@ -175,16 +270,17 @@ export default function AdminProducts() {
                   <th className="p-2">Price</th>
                   <th className="p-2">Stock</th>
                   <th className="p-2">Image</th>
-                  <th className="p-2" />
+                  <th className="p-2"></th>
                 </tr>
               </thead>
-
               <tbody>
-                {(products[key] || []).map(prod => (
+                {(products[key] || []).map(p => (
                   <ProductRow
-                    key={prod.id}
-                    prod={prod}
-                    onSaved={upd => handleRowSaved(key, upd)}
+                    key={p.id}
+                    prod={p}
+                    onSaved={u => handleRowSaved(key, u)}
+                    onDeleted={pid => handleRowDeleted(key, pid)}
+                    toast={showToast}
                   />
                 ))}
               </tbody>
@@ -192,6 +288,18 @@ export default function AdminProducts() {
           </div>
         </div>
       ))}
+      {/* Toast hiển thị thông báo */}
+      {toast && (
+        <div
+          className={`
+            fixed top-4 left-1/2 -translate-x-1/2 z-50
+            ${toast.color} text-white px-4 py-2 rounded shadow-lg
+            animate-fade
+          `}
+        >
+          {toast.msg}
+        </div>
+      )}
     </div>
   );
 }

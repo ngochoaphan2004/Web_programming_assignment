@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import axiosConfig from "@/axiosConfig";
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
+
 const categories = [
   { key: "sneaker", label: "Sneaker" },
   { key: "sandal", label: "Sandal" },
@@ -39,7 +41,7 @@ export default function AllProductsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {(productsByCategory[key] || []).map((p) => (
               <div key={p.id} className="text-black">
-                <img src={p.image || "/ex_img.png"} alt={p.name} className="mx-auto" />
+                <img src={p.image ? HOST + p.image : "/ex_img.png"} alt={p.name} className="mx-auto" />
                 <p className="mt-2 text-sm line-clamp-2">{p.name}</p>
                 <p className="font-bold">
                   {Number(p.price).toLocaleString("vi-VN")}₫

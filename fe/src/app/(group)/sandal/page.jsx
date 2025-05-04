@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import axiosConfig from "@/axiosConfig";
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
 export default function SandalPage() {
   const [products, setProducts] = useState([]);
 
@@ -21,7 +22,7 @@ export default function SandalPage() {
         {products.map((p) => (
           <div key={p.id} className="text-black">
             <img
-              src={p.image || "/ex_img.png"}
+              src={p.image ? HOST + p.image : "/ex_img.png"}
               alt={p.name}
               className="mx-auto"
             />

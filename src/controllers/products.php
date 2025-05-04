@@ -32,6 +32,94 @@ class ProductController {
         echo json_encode(["success" => true, "data" => $products]);
     }
     
+    // // Thêm sản phẩm mới
+    // public function createProduct() {
+    //     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    //         http_response_code(405);
+    //         echo json_encode(["success" => false, "message" => "Method not allowed"]);
+    //         return;
+    //     }
+
+    //     $name = trim($_POST['name'] ?? '');
+    //     $description = trim($_POST['description'] ?? '');
+    //     $price = floatval($_POST['price'] ?? 0);
+    //     $stock = intval($_POST['stock'] ?? 0);
+    //     $imagePath = null;
+
+    //     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+    //         $uploadDir = 'uploads/';
+    //         if (!is_dir($uploadDir)) {
+    //             mkdir($uploadDir, 0777, true);
+    //         }
+
+    //         $file = $_FILES['image'];
+    //         $fileName = uniqid() . '-' . basename($file['name']);
+    //         $targetPath = $uploadDir . $fileName;
+
+    //         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+    //             $imagePath = $targetPath;
+    //         }
+    //     }
+
+    //     $productModel = new Product();
+    //     $result = $productModel->create($name, $description, $price, $imagePath, $stock);
+
+    //     if ($result) {
+    //         echo json_encode(["success" => true, "message" => "Product created successfully"]);
+    //     } else {
+    //         echo json_encode(["success" => false, "message" => "Failed to create product"]);
+    //     }
+    // }
+
+    // // Cập nhật thông tin sản phẩm
+    // public function updateProduct($id) {
+    //     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    //         http_response_code(405);
+    //         echo json_encode(["success" => false, "message" => "Method not allowed"]);
+    //         return;
+    //     }
+    
+    //     $productModel = new Product();
+    //     $product = $productModel->getProductById($id);
+    //     if (!$product) {
+    //         echo json_encode(["success" => false, "message" => "Product not found"]);
+    //         return;
+    //     }
+    
+    //     // Lấy dữ liệu từ form
+    //     $name        = $_POST['name']        ?? $product['name'];
+    //     $description = $_POST['description'] ?? $product['description'];
+    //     $price       = $_POST['price']       ?? $product['price'];
+    //     $stock       = $_POST['stock']       ?? $product['stock'];
+    //     $imagePath   = $_POST['image_url']   ?? $product['image'];  // lấy link nếu có
+    
+    //     // Nếu có upload ảnh mới → ưu tiên ảnh file
+    //     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+    //         $uploadDir = 'uploads/';
+    //         if (!is_dir($uploadDir)) {
+    //             mkdir($uploadDir, 0777, true);
+    //         }
+    
+    //         $file = $_FILES['image'];
+    //         $fileName = uniqid() . '-' . basename($file['name']);
+    //         $targetPath = $uploadDir . $fileName;
+    
+    //         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+    //             $imagePath = $targetPath;
+    //         }
+    //     }
+    
+    //     $success = $productModel->update($id, $name, $description, $price, $imagePath, $stock);
+    //     echo json_encode(["success" => $success]);
+    // }
+
+
+
+
+
+
+
+
     // Thêm sản phẩm mới
     public function createProduct() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -46,72 +134,81 @@ class ProductController {
         $stock = intval($_POST['stock'] ?? 0);
         $imagePath = null;
 
+        /* ---------- UPLOAD ---------- */
         if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-            $uploadDir = 'uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
+            $uploadDir = __DIR__ . '/../public/uploads/';   // đường dẫn THẬT
+            $urlDir    = '/src/public/uploads/';        // đường dẫn WEB
 
-            $file = $_FILES['image'];
-            $fileName = uniqid() . '-' . basename($file['name']);
-            $targetPath = $uploadDir . $fileName;
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                $imagePath = $targetPath;
+            $file      = $_FILES['image'];
+            $fileName  = uniqid() . '-' . basename($file['name']);
+            $target    = $uploadDir . $fileName;
+
+            if (move_uploaded_file($file['tmp_name'], $target)) {
+                $imagePath = $urlDir . $fileName;           // lưu vào DB
             }
         }
+        /* -------------------------------- */
 
         $productModel = new Product();
-        $result = $productModel->create($name, $description, $price, $imagePath, $stock);
+        $ok = $productModel->create($name,$description,$price,$imagePath,$stock);
 
-        if ($result) {
-            echo json_encode(["success" => true, "message" => "Product created successfully"]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Failed to create product"]);
-        }
+        echo json_encode(["success"=>$ok,
+            "message"=>$ok?"Product created successfully":"Failed to create product"]);
     }
 
-    // Cập nhật thông tin sản phẩm
+    /* ------------------------------------------------------------------ */
+    /*                              UPDATE                                */
+    /* ------------------------------------------------------------------ */
+
     public function updateProduct($id) {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             return;
         }
-    
+
         $productModel = new Product();
         $product = $productModel->getProductById($id);
         if (!$product) {
-            echo json_encode(["success" => false, "message" => "Product not found"]);
-            return;
+            echo json_encode(["success"=>false,"message"=>"Product not found"]); return;
         }
-    
-        // Lấy dữ liệu từ form
+
         $name        = $_POST['name']        ?? $product['name'];
         $description = $_POST['description'] ?? $product['description'];
         $price       = $_POST['price']       ?? $product['price'];
         $stock       = $_POST['stock']       ?? $product['stock'];
-        $imagePath   = $_POST['image_url']   ?? $product['image'];  // lấy link nếu có
-    
-        // Nếu có upload ảnh mới → ưu tiên ảnh file
+        $imagePath   = $_POST['image_url']   ?? $product['image'];   // giữ link cũ
+
+        /* ---------- UPLOAD nếu có file mới ---------- */
         if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-            $uploadDir = 'uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-    
-            $file = $_FILES['image'];
+            $uploadDir = __DIR__ . '/../public/uploads/';
+            $urlDir    = '/src/public/uploads/';
+
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+            $file     = $_FILES['image'];
             $fileName = uniqid() . '-' . basename($file['name']);
-            $targetPath = $uploadDir . $fileName;
-    
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                $imagePath = $targetPath;
+            $target   = $uploadDir . $fileName;
+
+            if (move_uploaded_file($file['tmp_name'], $target)) {
+                $imagePath = $urlDir . $fileName;          // ghi đè link mới
             }
         }
-    
-        $success = $productModel->update($id, $name, $description, $price, $imagePath, $stock);
-        echo json_encode(["success" => $success]);
+        /* -------------------------------------------- */
+
+        $ok = $productModel->update($id,$name,$description,$price,$imagePath,$stock);
+        echo json_encode(["success"=>$ok]);
     }
+
+
+
+
+
+
+
+
     
 
     // Lấy sản phẩm theo danh mục

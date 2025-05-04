@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import axios from "axios";
 import axiosConfig from "@/axiosConfig";
-
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
 export default function SneakerPage() {
   const [products, setProducts] = useState([]);
 
@@ -24,7 +24,7 @@ export default function SneakerPage() {
         {products.map((p) => (
           <div key={p.id} className="text-black">
             <img
-              src={p.image || "/ex_img.png"}
+              src={p.image ? HOST + p.image : "/ex_img.png"}
               alt={p.name}
               className="mx-auto"
             />
