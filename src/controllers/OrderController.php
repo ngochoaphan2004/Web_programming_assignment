@@ -117,8 +117,18 @@ class OrderController {
             return;
         }
 
+        /* CHECK & TRỪ STOCK */
+        $check = $this->orderModel->validateAndDecreaseStock($orderId);
+        if (!$check['ok']) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Sản phẩm \"{$check['product']}\" hiện chỉ còn {$check['remain']} chiếc"
+            ]);
+            return;
+        }
+
         /* đổi status "processing" sau khi nhấn Thanh toán */
         $ok = $this->orderModel->updateStatus($orderId,'processing');
         echo json_encode(["success"=>$ok]);
-    }
+    }    
 }

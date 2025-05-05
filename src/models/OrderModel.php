@@ -9,16 +9,42 @@ class OrderModel {
     }
 
     /* lấy đơn "pending" hiện tại, nếu chưa có thì tạo mới */
-    public function getOrCreatePendingOrder(int $userId): int {
-        $stmt = $this->db->prepare("SELECT id FROM orders WHERE user_id = ? AND status = 'pending'");
-        $stmt->execute([$userId]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row) return (int)$row['id'];
+    // public function getOrCreatePendingOrder(int $userId): int {
+    //     $stmt = $this->db->prepare("SELECT id FROM orders WHERE user_id = ? AND status = 'pending'");
+    //     $stmt->execute([$userId]);
+    //     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    //     if ($row) return (int)$row['id'];
 
-        $this->db->prepare("INSERT INTO orders (user_id,total_price,status) VALUES (?,0,'pending')")
-                 ->execute([$userId]);
+    //     $this->db->prepare("INSERT INTO orders (user_id,total_price,status) VALUES (?,0,'pending')")
+    //              ->execute([$userId]);
+    //     return (int)$this->db->lastInsertId();
+    // }
+
+
+
+
+    /* OrderModel.php */
+
+    public function findPendingOrder(int $userId): ?int {
+        $st = $this->db->prepare(
+            "SELECT id FROM orders WHERE user_id = ? AND status = 'pending' LIMIT 1"
+        );
+        $st->execute([$userId]);
+        $id = $st->fetchColumn();
+        return $id ? (int)$id : null;
+    }
+
+    public function createPending(int $userId): int {
+        $this->db->prepare(
+            "INSERT INTO orders (user_id,total_price,status) VALUES (?,0,'pending')"
+        )->execute([$userId]);
         return (int)$this->db->lastInsertId();
     }
+
+
+
+
+
 
     /* lấy tất cả item trong giỏ */
     public function getCartItems(int $orderId): array {
@@ -51,11 +77,15 @@ class OrderModel {
     }
 
     /* thêm / tăng số lượng 1 sản phẩm */
-    public function addItem(int $orderId, int $productId, int $quantity, float $unitPrice): void {
-        $q = "INSERT INTO order_items (order_id,product_id,quantity,price)
-              VALUES (?,?,?,?)
-              ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
-        $this->db->prepare($q)->execute([$orderId,$productId,$quantity,$unitPrice]);
+    public function addItem(int $orderId, int $pid, int $qty, float $price): void
+    {
+        $sql = "INSERT INTO order_items (order_id, product_id, quantity, price)
+                VALUES (?,?,?,?)
+                ON DUPLICATE KEY UPDATE
+                    quantity = quantity + VALUES(quantity),
+                    price    = VALUES(price)";   // luôn ghi đơn giá mới
+        $this->db->prepare($sql)->execute([$orderId,$pid,$qty,$price]);
+
         $this->recalcTotal($orderId);
     }
 
@@ -135,4 +165,45 @@ class OrderModel {
         
         return $result && $rowCount > 0;
     }
+
+    /* kiểm tra & trừ tồn kho – chạy trong transaction */
+    public function validateAndDecreaseStock(int $orderId): array
+    {
+        $this->db->beginTransaction();
+
+        /* gộp quantity theo product_id */
+        $sql = "SELECT oi.product_id, SUM(oi.quantity) AS qty,
+                    p.stock, p.name
+                FROM order_items oi
+                JOIN products p ON p.id = oi.product_id
+                WHERE oi.order_id = ?
+                GROUP BY oi.product_id";
+        $st = $this->db->prepare($sql);
+        $st->execute([$orderId]);
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $r) {
+            if ($r['qty'] > $r['stock']) {
+                $this->db->rollBack();
+                return [
+                    'ok'      => false,
+                    'product' => $r['name'],
+                    'remain'  => $r['stock']
+                ];
+            }
+        }
+
+        /* đủ hàng → trừ kho */
+        $upd = $this->db->prepare(
+            "UPDATE products SET stock = stock - :qty WHERE id = :pid"
+        );
+        foreach ($rows as $r) {
+            $upd->execute([':qty' => $r['qty'], ':pid' => $r['product_id']]);
+        }
+
+        $this->db->commit();
+        return ['ok' => true];
+    }
+
+
 }

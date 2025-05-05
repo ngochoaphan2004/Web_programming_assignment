@@ -131,6 +131,7 @@ class ProductController {
         $name = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $price = floatval($_POST['price'] ?? 0);
+        $category = $_POST['category'] ?? 'sneaker';
         $stock = intval($_POST['stock'] ?? 0);
         $imagePath = null;
 
@@ -152,7 +153,7 @@ class ProductController {
         /* -------------------------------- */
 
         $productModel = new Product();
-        $ok = $productModel->create($name,$description,$price,$imagePath,$stock);
+        $ok = $productModel->create($name,$description,$price,$imagePath,$stock,$category);
 
         echo json_encode(["success"=>$ok,
             "message"=>$ok?"Product created successfully":"Failed to create product"]);
@@ -178,6 +179,7 @@ class ProductController {
         $name        = $_POST['name']        ?? $product['name'];
         $description = $_POST['description'] ?? $product['description'];
         $price       = $_POST['price']       ?? $product['price'];
+        $category  = $_POST['category'] ?? $product['category'];
         $stock       = $_POST['stock']       ?? $product['stock'];
         $imagePath   = $_POST['image_url']   ?? $product['image'];   // giữ link cũ
 
@@ -198,7 +200,7 @@ class ProductController {
         }
         /* -------------------------------------------- */
 
-        $ok = $productModel->update($id,$name,$description,$price,$imagePath,$stock);
+        $ok = $productModel->update($id,$name,$description,$price,$imagePath,$stock,$category);
         echo json_encode(["success"=>$ok]);
     }
 

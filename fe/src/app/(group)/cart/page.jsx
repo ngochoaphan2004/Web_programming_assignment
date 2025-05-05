@@ -1,84 +1,79 @@
 // src/app/cart/page.jsx
 "use client";
 import { useEffect, useState } from "react";
-import axios from "@/axiosConfig"; // axios instance with baseURL and withCredentials
-import axiosConfig from "@/axiosConfig";
+import axiosConfig from "@/axiosConfig";          // ✅ luôn dùng bản đã cấu hình
 const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL;
 
 export default function CartPage() {
-  const [pendingItems, setPendingItems] = useState([]); // Current cart items
+  /* STATE */
+  const [pendingItems, setPendingItems]   = useState([]);
   const [pendingOrderId, setPendingOrderId] = useState(null);
-  const [activeOrders, setActiveOrders] = useState([]); // Orders being processed
-  const [loading, setLoading] = useState(true);
+  const [activeOrders,  setActiveOrders]  = useState([]);
+  const [loading, setLoading]             = useState(true);
 
-  // Gửi yêu cầu thanh toán (đổi trạng thái đơn => processing)
-  const handlePay = async () => {
-    try {
-      const res = await axiosConfig.post(`/orders/${pendingOrderId}/pay`);
-      if (res.data.success) {
-        alert("Đã gửi đơn! Shop sẽ xử lý sớm.");
-        fetchOrders(); // Reload both cart and active orders
-      } else {
-        alert("Có lỗi khi thanh toán!");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Có lỗi, vui lòng thử lại!");
-    }
-  };
-
-  /* lấy giỏ hàng và đơn đang xử lý khi trang mở */
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
+  /* ───────── 1. LẤY ĐƠN ───────── */
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      // Fetch pending cart
+
+      /* giỏ (pending) */
       const cartRes = await axiosConfig.get("/cart");
       if (cartRes.data.success) {
         setPendingOrderId(cartRes.data.data.order_id);
         setPendingItems(cartRes.data.data.items);
       }
 
-      // Fetch user's active orders
-      const ordersRes = await axiosConfig.get("/user/orders");
-      if (ordersRes.data.success) {
-        setActiveOrders(ordersRes.data.data);
+      /* đơn đã gửi */
+      const ordRes = await axiosConfig.get("/user/orders");
+      if (ordRes.data.success) {
+        setActiveOrders(ordRes.data.data);
       }
-    } catch (err) {
-      console.error("Load orders error", err);
-      alert("Bạn cần đăng nhập để xem giỏ hàng và đơn hàng!");
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      alert("Bạn cần đăng nhập để xem giỏ!");
+    } finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetchOrders(); }, []);
+
+  /* ───────── 2. THANH TOÁN ───────── */
+  const handlePay = async () => {
+    if (!pendingOrderId) return;
+    try {
+      const res = await axiosConfig.post(`/orders/${pendingOrderId}/pay`);
+      if (res.data.success) {
+        alert("Đặt hàng thành công!");
+        /* xoá giỏ & reload danh sách */
+        setPendingOrderId(null);
+        setPendingItems([]);
+        fetchOrders();
+      } else {
+        alert(res.data.message || "Không thể thanh toán!");
+      }
+    } catch (e) {
+      alert("Lỗi kết nối máy chủ!");
     }
   };
 
-  /* sửa số lượng */
+  /* ───────── 3. CẬP NHẬT SỐ LƯỢNG / XOÁ ───────── */
   const updateQty = async (itemId, qty) => {
     qty = Math.max(1, qty);
     try {
       await axiosConfig.post(`/cart/item/${itemId}`, { quantity: qty });
-      setPendingItems(prev => prev.map(i => (i.id === itemId ? { ...i, quantity: qty } : i)));
-    } catch (err) {
-      console.error(err);
-    }
+      setPendingItems(p =>
+        p.map(i => (i.id === itemId ? { ...i, quantity: qty } : i))
+      );
+    } catch { alert("Lỗi mạng"); }
   };
 
-  /* xoá item */
-  const deleteItem = async (itemId) => {
-    if (!confirm("Xoá sản phẩm khỏi giỏ?")) return;
+  const deleteItem = async id => {
+    if (!confirm("Xoá sản phẩm?")) return;
     try {
-      await axiosConfig.delete(`/cart/item/${itemId}`);
-      setPendingItems(prev => prev.filter(i => i.id !== itemId));
-    } catch (err) {
-      console.error(err);
-    }
+      await axiosConfig.delete(`/cart/item/${id}`);
+      setPendingItems(p => p.filter(i => i.id !== id));
+    } catch { alert("Lỗi mạng"); }
   };
 
-  /* tính tổng */
-  const total = pendingItems.reduce((s, it) => s + it.price * it.quantity, 0);
+  const total = pendingItems.reduce((s,i)=>s+i.price*i.quantity,0);
 
   if (loading) return <p className="p-4">Đang tải...</p>;
 

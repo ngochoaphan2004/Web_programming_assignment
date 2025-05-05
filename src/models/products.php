@@ -64,67 +64,55 @@ class Product {
     }
     
 
-    /* -------------------------------------------------
-     * 2. THÊM MỚI
-     * -------------------------------------------------*/
-
-    /**
-     * Thêm sản phẩm mới
-     * @return bool true nếu thành công
-     */
+    /* ========== THÊM MỚI ========== */
     public function create(
-        string $name,
-        string $description,
-        float  $price,
-        ?string $image = null,
-        int    $stock  = 0
+        string  $name,
+        string  $description,
+        float   $price,
+        ?string $image,
+        int     $stock,
+        string  $category          // thêm
     ) {
-        $sql = "INSERT INTO products (name, description, price, image, stock)
-                VALUES (:name, :description, :price, :image, :stock)";
+        $sql = "INSERT INTO products
+                (name, description, price, image, stock, category)
+                VALUES (:name,:description,:price,:image,:stock,:category)";
         $stmt = $this->db->prepare($sql);
-
         return $stmt->execute([
             ':name'        => $name,
             ':description' => $description,
             ':price'       => $price,
             ':image'       => $image,
-            ':stock'       => $stock
+            ':stock'       => $stock,
+            ':category'    => $category     // bind
         ]);
     }
 
-    /* -------------------------------------------------
-     * 3. CẬP NHẬT
-     * -------------------------------------------------*/
-
-    /**
-     * Cập nhật toàn bộ thông tin sản phẩm
-     */
+    /* ========== CẬP NHẬT ========== */
     public function update(
         int     $id,
         string  $name,
         string  $description,
         float   $price,
         ?string $image,
-        int     $stock
-    ) {
-        $sql = "UPDATE products
-                SET name        = :name,
-                    description = :description,
-                    price       = :price,
-                    image       = :image,
-                    stock       = :stock
-                WHERE id = :id";
+        int     $stock,
+        string  $category
+    ){
+        $sql = "UPDATE products SET
+                name=:name, description=:description, price=:price,
+                image=:image, stock=:stock, category=:category     -- ➌
+                WHERE id=:id";
         $stmt = $this->db->prepare($sql);
-
         return $stmt->execute([
             ':id'          => $id,
             ':name'        => $name,
             ':description' => $description,
             ':price'       => $price,
             ':image'       => $image,
-            ':stock'       => $stock
+            ':stock'       => $stock,
+            ':category'    => $category
         ]);
     }
+
 
     /** Chỉ cập nhật tồn kho (stock) – tiện cho nghiệp vụ bán hàng  */
     public function updateStock(int $id, int $stock) {
