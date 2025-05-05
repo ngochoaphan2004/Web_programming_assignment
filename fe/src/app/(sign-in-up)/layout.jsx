@@ -9,7 +9,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <div id="main" className="layout-horizontal">
+      <div id="main" className="layout-horizontal flex flex-col">
+
           <div className="page-content container">
             {children}
           </div>

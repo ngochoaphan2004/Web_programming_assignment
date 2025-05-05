@@ -1,12 +1,20 @@
 "use client"
 
-import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import UploadFileAvatar from "../../../../components/uploadAvatar/uploadAvatar";
 export default function ProfilePage() {
-    const params = useParams(); 
-    const userID = params.id;
+    useEffect(()=>{
+        async function fetchData() {
+            const res = await axiosConfig.get('user/session-check', {
+                withCredentials: true,
+            })
+            
+        }
+        fetchData()
+    },[])
 
     return (
-        <div className="page-heading">
+        <div className="page-heading px-4 py-8">
             <div className="page-title">
                 <div className="row">
                     <div className="col-12 col-md-6 order-md-1 order-last">
@@ -21,9 +29,8 @@ export default function ProfilePage() {
                         <div className="card">
                             <div className="card-body">
                                 <div className="d-flex justify-content-center align-items-center flex-column">
-                                    <div className="avatar avatar-2xl">
-                                        <img src="/../../../../../avatar.png" alt="Avatar" className="w-[120px]! h-[120px]!"/>
-                                    </div>
+                                    <UploadFileAvatar />
+
                                     <h3 className="mt-3">John Doe</h3>
                                     <p className="text-small">Junior Software Engineer</p>
                                 </div>

@@ -4,11 +4,13 @@ require_once '../controllers/contact.php';
 require_once '../controllers/products.php';
 require_once '../controllers/CartController.php';
 require_once '../controllers/OrderController.php';
+require_once '../controllers/shop.php';
+
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
 // $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$basePath = dirname($_SERVER['SCRIPT_NAME']); 
+$basePath = dirname($_SERVER['SCRIPT_NAME']);
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
 $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -21,6 +23,7 @@ $contactController = new ContactController();
 $productController = new ProductController();
 $cartController = new CartController();
 $orderController = new OrderController();
+$shopController = new ShopController();
 
 
 if ($requestMethod == 'OPTIONS') {
@@ -72,6 +75,7 @@ switch (true) {
             $contactController->getAllContacts();
         }
         break;
+        
     case $uri === 'contacts' && $requestMethod === 'POST':
         $contactController->createContact();
         break;
@@ -180,10 +184,17 @@ switch (true) {
     case preg_match('/^orders\\/(\\d+)\\/pay$/',$uri,$m) && $requestMethod === 'POST':
         $orderController->pay($m[1]);
         break;
-
-
-
-
+    // SHOP INFOMATION
+    
+    case $uri === 'shop/info' && $requestMethod === 'GET':
+        $shopController->getShopInfo();
+        break;
+    case $uri === 'shop/info/update' && $requestMethod === 'POST':
+        $shopController->updateShopInfo();
+        break;
+    case $uri === 'shop/info/logo' && $requestMethod === 'POST':
+        $shopController->changeLogo();
+        break;
 
 
 

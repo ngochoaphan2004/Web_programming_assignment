@@ -1,9 +1,9 @@
 "use client"
 
 import { usePathname } from "next/navigation";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import axiosConfig from "@/axiosConfig";
+import { AnimatePresence, motion } from "motion/react"
 
 const UserNav = [
     { url: "/", title: "Home", elementID: "home" },
@@ -22,34 +22,37 @@ const AdminNav = [
 ]
 
 
-export default function Header(props) {
+function TempHeader(props) {
     const [url, setUrl] = useState("");
     const [authenUrl, setAuthenUrl] = useState("");
     const [isOpen, setSecondNB] = useState(true);
     const pathname = usePathname();
     const handleLogout = async () => {
         try {
-          const response = await axiosConfig.post("/user/logout", {}, {
-            withCredentials: true // Để gửi cookie (nếu dùng session PHP)
-          });
-    
-          if (response.data.success) {
-            window.location.href = "/";
-            // router.push("/");
-          } else {
-            alert("Logout failed");
-          }
+            const response = await axiosConfig.post("/user/logout", {}, {
+                withCredentials: true // Để gửi cookie (nếu dùng session PHP)
+            });
+
+            if (response.data.success) {
+                window.location.href = "/";
+            } else {
+                alert("Logout failed");
+            }
         } catch (error) {
-          console.error("Logout error:", error);
-          alert("An error occurred. Please try again.");
+            console.error("Logout error:", error);
+            alert("An error occurred. Please try again.");
         }
-      };
+    };
     useEffect(() => {
         if (props.admin) {
             setAuthenUrl(pathname);
+            console.log("admin", pathname);
         }
-        else
+        else {
             setUrl(pathname);
+            console.log("user", pathname);
+        }
+
     }, [])
 
     const [dropdown, setDropdown] = useState(false)
@@ -122,34 +125,34 @@ export default function Header(props) {
 
                     {/* QUICK SEARCH + nút chi tiết */}
                     <form
-                    onSubmit={(e)=>{
-                        e.preventDefault();
-                        const kw = e.target.kw.value.trim();
-                        if (kw) window.location.href = `/search?kw=${encodeURIComponent(kw)}`;
-                    }}
-                    className="hidden md:flex items-center gap-2"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            const kw = e.target.kw.value.trim();
+                            if (kw) window.location.href = `/search?kw=${encodeURIComponent(kw)}`;
+                        }}
+                        className="hidden md:flex items-center gap-2"
                     >
-                    {/* ô nhập */}
-                    <input
-                        name="kw"
-                        placeholder="Quick search and Enter"
-                        className="border px-2 py-1 rounded w-48 md:w-60"
-                    />
+                        {/* ô nhập */}
+                        <input
+                            name="kw"
+                            placeholder="Quick search and Enter"
+                            className="border px-2 py-1 rounded w-48 md:w-60"
+                        />
 
-                    {/* nút tìm chi tiết */}
-                    <a
-                        href="/search"
-                        title="Tìm kiếm chi tiết"
-                        className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700
+                        {/* nút tìm chi tiết */}
+                        <a
+                            href="/search"
+                            title="Tìm kiếm chi tiết"
+                            className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700
                                 text-white text-sm px-3 py-[6px] rounded"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round"
-                                d="M8 4h13M8 9h13M8 14h13M8 19h13M3 4h.01M3 9h.01M3 14h.01M3 19h.01" />
-                        </svg>
-                        Chi tiết
-                    </a>
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                    d="M8 4h13M8 9h13M8 14h13M8 19h13M3 4h.01M3 9h.01M3 14h.01M3 19h.01" />
+                            </svg>
+                            Chi tiết
+                        </a>
                     </form>
 
                     <div className="header-top-right">
@@ -180,14 +183,19 @@ export default function Header(props) {
                                         <img src="/avatar.png" alt="Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="hidden sm:block">
-                                        <h6 className="text-base font-medium">{props.user.name == "" ? User : props.user.name}</h6>
+                                        <h6
+                                            className="text-base font-medium self-center m-0"
+                                            style={{ fontFamily: "var(--bs-body-font-family)", fontWeight: "var(--bs-body-font-weight)" }}
+                                        >
+                                            {props.user.name === "" ? "User" : props.user.name}
+                                        </h6>
                                     </div>
                                 </button>
 
                                 {dropdown && (
                                     <ul className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
                                         <li>
-                                            <a href="#" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
+                                            <a href="/profile" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
                                         </li>
                                         <li>
                                             <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
@@ -198,10 +206,10 @@ export default function Header(props) {
                                         <li><hr className="my-1 border-gray-200" /></li>
                                         <li>
                                             <button
-                                            onClick={handleLogout}
-                                            className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                                                onClick={handleLogout}
+                                                className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
                                             >
-                                            Logout
+                                                Logout
                                             </button>
                                         </li>
                                     </ul>
@@ -246,4 +254,27 @@ export default function Header(props) {
 
         </header>
     );
+}
+
+
+export default function Header(props) {
+    return (
+        <AnimatePresence mode="wait">
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    y: -100,
+                }}
+                animate={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                transition={{
+                    duration: 0.2,
+                }}
+            >
+                <TempHeader {...props} />
+            </motion.div>
+        </AnimatePresence>
+    )
 }

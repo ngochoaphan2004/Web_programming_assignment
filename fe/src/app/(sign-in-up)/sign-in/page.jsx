@@ -43,11 +43,10 @@ export default function SigninPage() {
       console.log("Phản hồi từ backend:", response.data);
 
       if (response.data.success) {
-        alert("Đăng nhập thành công");
-        // if (response.data.user.role == 1)
-        //   window.location.href = "admin/accounts";
-        // else
-        //   window.location.href = "/";
+        if (response.data.user.role == 1)
+          window.location.href = "admin/accounts";
+        else
+          window.location.href = "/";
       } else {
         alert("Sai thông tin đăng nhập.");
       }
@@ -59,7 +58,7 @@ export default function SigninPage() {
 
   return (
     <div className="row align-items-center justify-content-center">
-      <div id="auth" className="hiddenscroll col-lg-6 col-12">
+      <div id="auth" className="hiddenscroll col-lg-6 col-12 content-center">
         <div className="auth-left">
           <h1 className="auth-title">Sign in.</h1>
           <p className="auth-subtitle mb-5">
@@ -91,7 +90,7 @@ export default function SigninPage() {
                 <i className="bi bi-shield-lock"></i>
               </div>
             </div>
-            <div className="form-check form-check-lg d-flex align-items-end">
+            {/* <div className="form-check form-check-lg d-flex align-items-end">
               <input
                 className="form-check-input me-2"
                 type="checkbox"
@@ -103,7 +102,7 @@ export default function SigninPage() {
               >
                 Keep me logged in
               </label>
-            </div>
+            </div> */}
             <button
               type="submit"
               className="btn btn-primary btn-block btn-lg shadow-lg mt-5"

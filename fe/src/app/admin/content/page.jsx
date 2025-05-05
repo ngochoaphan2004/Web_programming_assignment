@@ -1,20 +1,55 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../css.css'
+import axiosConfig from '@/axiosConfig';
+import ConfirmCustom from '../../../../components/comfirm/comfirm';
+import { AnimatePresence, motion } from "motion/react"
+
 export default function CompanyInfoEditor() {
     const [companyInfo, setCompanyInfo] = useState({
-        name: 'Công ty Shoes vietnam',
-        address: '123 Đường Lê Lợi, Q.1, TP.HCM',
-        phone: '0901234567',
-        email: 'support@shoes.com',
-        description: 'Công ty chuyên sản xuất và phân phối giày dép chất lượng cao với hơn 10 năm kinh nghiệm trong ngành. Chúng tôi cam kết mang đến những sản phẩm thoải mái, bền đẹp với giá cả hợp lý.',
+        id: "",
+        name: "",
+        phone: "",
+        email: "",
+        description: "",
+        address: [],
         logo: '/logo.png'
     });
 
     const [logoPreview, setLogoPreview] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isHelper, setIsHelper] = useState(false);
+
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState(false);
+
+    const handleOpenConfirm = () => {
+        setShowConfirm(true);
+    };
+
+    const handleConfirmSubmit = async () => {
+        setIsSubmitting(true);
+
+        await axiosConfig.post('shop/info/update', { ...companyInfo }, {
+            withCredentials: true,
+        })
+            .then((response) => {
+                console.log(response);
+                if (!response.data.success) {
+                    setShowError(true)
+                    setIsSubmitting(false);
+                    return;
+                }
+                setIsSubmitting(false);
+                setShowSuccess(true);
+            })
+            .catch(() => {
+                setShowError(true)
+            })
+        setShowConfirm(false);
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -32,21 +67,25 @@ export default function CompanyInfoEditor() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
 
-        try {
-            // Gọi API để lưu thông tin
-            console.log('Đang lưu thông tin:', companyInfo);
-            alert('Cập nhật thông tin thành công!');
-        } catch (error) {
-            console.error('Lỗi khi lưu thông tin:', error);
-            alert('Có lỗi xảy ra khi lưu thông tin!');
-        } finally {
-            setIsSubmitting(false);
+    useEffect(() => {
+        async function fetchData() {
+            await axiosConfig.get('shop/info')
+                .then((response) => {
+                    const data = response.data
+                    setCompanyInfo({
+                        id: data['id'],
+                        name: data['name'],
+                        email: data['email'],
+                        phone: data['phone'],
+                        address: data['addresses'],
+                        description: data['description'],
+                        logo: '/logo.png'
+                    })
+                })
         }
-    };
+        fetchData()
+    }, [])
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8">
@@ -72,7 +111,7 @@ export default function CompanyInfoEditor() {
                 </div>
             }
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-lg">
+            <div className="bg-white rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Cột thông tin cơ bản */}
                     <div className="space-y-4">
@@ -89,13 +128,29 @@ export default function CompanyInfoEditor() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+                            <label className="text-sm font-medium text-gray-700 mb-1">
+                                Địa chỉ
+                            </label>
+
                             <input
                                 type="text"
-                                name="address"
-                                value={companyInfo.address}
-                                onChange={handleInputChange}
-                                placeholder="Nhập địa chỉ"
+                                name="address1"
+                                value={companyInfo.address[0]?.address || ''}
+                                onChange={(e) => {
+                                    setCompanyInfo(prev => ({ ...prev, address: [{ id: prev.address[0].id, address: e.target.value }, prev.address[1]] }));
+                                }}
+                                placeholder="Nhập địa chỉ 1"
+                                className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+
+                            <input
+                                type="text"
+                                name="address2"
+                                value={companyInfo.address[1]?.address || ''}
+                                onChange={(e) => {
+                                    setCompanyInfo(prev => ({ ...prev, address: [prev.address[0], { id: prev.address[1].id, address: e.target.value }] }));
+                                }}
+                                placeholder="Nhập địa chỉ 2"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
@@ -177,6 +232,7 @@ export default function CompanyInfoEditor() {
                     <button
                         type="submit"
                         disabled={isSubmitting}
+                        onClick={() => handleOpenConfirm(true)}
                         className={`px-6 py-2 rounded text-white font-medium ${isSubmitting ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} transition`}
                     >
                         {isSubmitting ? (
@@ -190,7 +246,16 @@ export default function CompanyInfoEditor() {
                         ) : 'Lưu thay đổi'}
                     </button>
                 </div>
-            </form>
+                <AnimatePresence mode='wait'>
+                    {showConfirm && (<ConfirmCustom isComfirm handleCancelConfirm={() => setShowConfirm(false)} handleConfirmSubmit={handleConfirmSubmit} />)}
+                </AnimatePresence>
+                <AnimatePresence mode='wait'>
+                    {showSuccess && (<ConfirmCustom isSuccessful handleCancelConfirm={() => setShowSuccess(false)} />)}
+                </AnimatePresence>
+                <AnimatePresence mode='wait'>
+                    {showError && (<ConfirmCustom isError handleCancelConfirm={() => setShowError(false)} />)}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
