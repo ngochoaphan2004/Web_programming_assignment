@@ -154,6 +154,11 @@ switch (true) {
         $cartController->deleteItem($m[1]);
         break;
 
+    /* TÌM KIẾM – theo kw, cat[], price[]=min-max */
+    case $uri === 'products/search' && $requestMethod === 'GET':
+        $productController->search();
+        break;
+    
     /* ============ ADMIN ============ */
     case $uri === 'orders' && $requestMethod === 'GET':
         $orderController->index();            // danh sách

@@ -144,6 +144,47 @@ class Product {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
+    /** Tìm kiếm nâng cao */
+    public function searchAdvanced(string $kw, array $cats, array $prices) {
+        $sql    = "SELECT * FROM products WHERE 1";
+        $params = [];                           // <‑‑ chỉ dùng vị trí
+
+        /* 1. Từ khoá */
+        if ($kw !== '') {
+            $sql .= " AND (name LIKE ? OR description LIKE ?)";
+            $like = "%{$kw}%";
+            $params[] = $like;    // 1
+            $params[] = $like;    // 2
+        }
+
+        /* 2. Danh mục */
+        $cats = array_filter($cats);            // loại bỏ rỗng
+        if ($cats) {
+            $place = rtrim(str_repeat("?,", count($cats)), ",");
+            $sql  .= " AND category IN ($place)";
+            $params = array_merge($params, $cats);   // nối thêm
+        }
+
+        /* 3. Khoảng giá – có thể nhiều khoảng */
+        if ($prices) {
+            $conds = [];
+            foreach ($prices as $p) {
+                [$min,$max] = array_map('intval', explode('-', $p));
+                $conds[] = "(price BETWEEN ? AND ?)";
+                $params[] = $min;
+                $params[] = $max;
+            }
+            $sql .= " AND (" . implode(" OR ", $conds) . ")";
+        }
+
+        $sql .= " ORDER BY created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
     
     /** Lấy sản phẩm theo danh mục với phân trang  */
     public function getProductsByCategoryWithLimit(string $category, int $limit = 5, int $offset = 0) {

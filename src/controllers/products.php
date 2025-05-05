@@ -218,6 +218,22 @@ class ProductController {
         echo json_encode(["success" => true, "data" => $products]);
     }
     
+    public function search() {
+        $kw      = $_GET['kw']   ?? '';
+        $cats    = $_GET['cat']  ?? [];               // cat=sneaker&cat=balo (mảng)
+        $prices  = $_GET['price']?? [];               // price=0-200000 (mảng)
+    
+        /* ép về mảng */
+        $cats   = is_array($cats)   ? $cats   : [$cats];
+        $prices = is_array($prices) ? $prices : [$prices];
+    
+        $model = new Product();
+        $data  = $model->searchAdvanced($kw, $cats, $prices);
+    
+        echo json_encode(["success"=>true,"data"=>$data]);
+    }
+    
+
     // Lấy sản phẩm theo danh mục với phân trang
     public function getProductsByCategoryPaginated($category) {
         $limit  = $_GET['limit']  ?? 5;

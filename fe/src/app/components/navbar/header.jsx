@@ -10,7 +10,7 @@ const UserNav = [
     { url: "/sneaker", title: "Sneaker", elementID: "sneaker" },
     { url: "/sandal", title: "Sandal", elementID: "sandal" },
     { url: "/balo", title: "Balo", elementID: "balo" },
-    { url: "/all", title: "All", elementID: "all" }
+    { url: "/all", title: "All", elementID: "all" },
 ]
 
 const AdminNav = [
@@ -120,6 +120,37 @@ export default function Header(props) {
                         </>
                     }
 
+                    {/* QUICK SEARCH + nút chi tiết */}
+                    <form
+                    onSubmit={(e)=>{
+                        e.preventDefault();
+                        const kw = e.target.kw.value.trim();
+                        if (kw) window.location.href = `/search?kw=${encodeURIComponent(kw)}`;
+                    }}
+                    className="hidden md:flex items-center gap-2"
+                    >
+                    {/* ô nhập */}
+                    <input
+                        name="kw"
+                        placeholder="Quick search and Enter"
+                        className="border px-2 py-1 rounded w-48 md:w-60"
+                    />
+
+                    {/* nút tìm chi tiết */}
+                    <a
+                        href="/search"
+                        title="Tìm kiếm chi tiết"
+                        className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700
+                                text-white text-sm px-3 py-[6px] rounded"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M8 4h13M8 9h13M8 14h13M8 19h13M3 4h.01M3 9h.01M3 14h.01M3 19h.01" />
+                        </svg>
+                        Chi tiết
+                    </a>
+                    </form>
 
                     <div className="header-top-right">
 
