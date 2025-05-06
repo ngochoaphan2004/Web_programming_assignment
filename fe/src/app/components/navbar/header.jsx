@@ -154,6 +154,11 @@ export default function Header(props) {
                                 <div className="container">
                                     <ul>
                                         <li id="home" className="menu-item">
+                                            <a href="/intro" className='menu-link'>
+                                                <span>Intro</span>
+                                            </a>
+                                        </li>
+                                        <li id="home" className="menu-item">
                                             <a href="/" className='menu-link'>
                                                 <span>Home</span>
                                             </a>
@@ -221,7 +226,7 @@ export default function Header(props) {
                                     className="flex items-center gap-2 focus:outline-none"
                                 >
                                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
-                                        <img src="/avatar.png" alt="Avatar" className="w-full h-full object-cover" />
+                                        <img src={props.user.avatar} alt="Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="hidden sm:block">
                                         <h6 className="text-base font-medium">{props.user.name == "" ? User : props.user.name}</h6>
@@ -288,6 +293,11 @@ export default function Header(props) {
                             </ul>
                             :
                             <ul>
+                                <li id="home" className="menu-item">
+                                    <a href="/intro" className='menu-link'>
+                                        <span>Intro</span>
+                                    </a>
+                                </li>
                                 <li id="home" className="menu-item">
                                     <a href="/" className='menu-link'>
                                         <span>Home</span>

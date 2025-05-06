@@ -13,6 +13,7 @@ class AuthService {
                     "id" => $_SESSION['user_id'],
                     "name" => $_SESSION['name'],
                     "email" => $_SESSION['email'],
+                    "avatar" => $_SESSION['avatar'],
                     "role" => $_SESSION['role']
                 ]
             ];

@@ -3,10 +3,25 @@
 # RewriteCond %{REQUEST_FILENAME} !-d
 # RewriteRule ^api/(.*)$ /BTL_LTW/src/public/$1 [L]
 # RewriteRule ^(.*)$ index.php/$1 [L]
+# RewriteEngine On
+
+
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteCond %{REQUEST_URI} ^/api/public/uploads/ [NC]
+# RewriteRule ^(.*)$ src/public/index.php/$1 [L]
 RewriteEngine On
 
+# Cho phép truy cập trực tiếp vào file thật hoặc thư mục thật
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# Cho phép truy cập trực tiếp vào thư mục uploads
+RewriteCond %{REQUEST_URI} ^/api/public/uploads/ [NC]
+RewriteRule ^ - [L]
+
+# Mọi request còn lại chuyển về index.php để định tuyến
 RewriteRule ^(.*)$ src/public/index.php/$1 [L]
+
 # RewriteRule ^api/(.*)$ api/src/public/index.php/$1 [L]

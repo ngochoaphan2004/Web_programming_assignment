@@ -6,6 +6,7 @@ import axiosConfig from "@/axiosConfig";
 import { AnimatePresence, motion } from "motion/react"
 
 const UserNav = [
+    { url: "/intro", title: "Intro", elementId: 'intro'},
     { url: "/", title: "Home", elementID: "home" },
     { url: "/sneaker", title: "Sneaker", elementID: "sneaker" },
     { url: "/sandal", title: "Sandal", elementID: "sandal" },
@@ -180,7 +181,7 @@ function TempHeader(props) {
                                     className="flex items-center gap-2 focus:outline-none"
                                 >
                                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
-                                        <img src="/avatar.png" alt="Avatar" className="w-full h-full object-cover" />
+                                        <img src={props.user.avatar === "" ?"/avatar.png": props.user.avatar } alt="Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="hidden sm:block">
                                         <h6

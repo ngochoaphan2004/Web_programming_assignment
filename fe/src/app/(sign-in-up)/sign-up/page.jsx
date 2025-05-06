@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { useState } from "react";
 import axiosConfig from "@/axiosConfig";
@@ -6,32 +6,33 @@ import axiosConfig from "@/axiosConfig";
 export default function SigninPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  // const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [confirm_password, setConfirm_password] = useState("");
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");  // Thêm state cho giới tính
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const nameCharRegex = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/;
-    const userNameCharRegex = /^[a-zA-Z0-9\u00C0-\u1EF9]+$/;
+    // const userNameCharRegex = /^[a-zA-Z0-9\u00C0-\u1EF9]+$/;
     const addressCharRegex = /^[a-zA-Z0-9\s,\u00C0-\u1EF9]+$/;
     const phoneRegex = /^\d{10}$/;
 
     let errors = [];
 
-    if (!email || !password || !confirm_password || !name || !username || !phone || !dob || !address) {
+    if (!email || !password || !confirm_password || !name || !phone || !dob || !address || !gender) {
       errors.push("All fields must be filled out.");
     }
     if (name && !nameCharRegex.test(name)) {
       errors.push("Name must not contain special characters.");
     }
-    if (username && !userNameCharRegex.test(username)) {
-      errors.push("Username must not contain spaces or special characters.");
-    }
+    // if (username && !userNameCharRegex.test(username)) {
+    //   errors.push("Username must not contain spaces or special characters.");
+    // }
     if (address && !addressCharRegex.test(address)) {
       errors.push("Address must not contain special characters (except comma).");
     }
@@ -47,16 +48,16 @@ export default function SigninPage() {
       return;
     }
 
-
     try {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("password", password);
-      formData.append("username", username);
+      // formData.append("username", username);
       formData.append("name", name);
       formData.append("phone", phone);
       formData.append("dob", dob);
       formData.append("address", address);
+      formData.append("gender", gender);  // Thêm giới tính vào formData
 
       const response = await axiosConfig.post(
         "user/register",
@@ -82,6 +83,7 @@ export default function SigninPage() {
       alert("An error occurred during registration.");
     }
   };
+
   return (
     <div className="row align-items-center justify-content-center">
       <div id="auth" className="hiddenscroll col-lg-6 col-12">
@@ -104,7 +106,10 @@ export default function SigninPage() {
             </div>
 
             <div className="form-group position-relative has-icon-left mb-4">
-              <input type="text" className="form-control form-control-xl" placeholder="Name"
+              <input
+                type="text"
+                className="form-control form-control-xl"
+                placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -113,18 +118,24 @@ export default function SigninPage() {
               </div>
             </div>
 
-            <div className="form-group position-relative has-icon-left mb-4">
-              <input type="text" className="form-control form-control-xl" placeholder="Username"
+            {/* <div className="form-group position-relative has-icon-left mb-4">
+              <input
+                type="text"
+                className="form-control form-control-xl"
+                placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
               <div className="form-control-icon">
                 <i className="bi bi-person"></i>
               </div>
-            </div>
+            </div> */}
 
             <div className="form-group position-relative has-icon-left mb-4">
-              <input type="password" className="form-control form-control-xl" placeholder="Password"
+              <input
+                type="password"
+                className="form-control form-control-xl"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -134,7 +145,10 @@ export default function SigninPage() {
             </div>
 
             <div className="form-group position-relative has-icon-left mb-4">
-              <input type="password" className="form-control form-control-xl" placeholder="Confirm Password"
+              <input
+                type="password"
+                className="form-control form-control-xl"
+                placeholder="Confirm Password"
                 value={confirm_password}
                 onChange={(e) => setConfirm_password(e.target.value)}
               />
@@ -182,9 +196,26 @@ export default function SigninPage() {
               </div>
             </div>
 
+            <div className="form-group position-relative has-icon-left mb-4">
+              <div className="form-control-icon" style={{ top: '50%', transform: 'translateY(-50%)' }}>
+                <i className="bi bi-gender-male"></i>
+              </div>
+              <select
+                className="form-control form-control-xl"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
+
 
             <button className="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>
           </form>
+
           <div className="text-center mt-5 text-lg fs-4">
             <p className='text-gray-600'>Already have an account? <a href="/sign-in" className="font-bold">Log
               in</a>.</p>
@@ -193,4 +224,4 @@ export default function SigninPage() {
       </div>
     </div>
   );
-};
+}

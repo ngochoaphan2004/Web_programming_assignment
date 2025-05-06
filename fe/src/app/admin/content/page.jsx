@@ -133,26 +133,34 @@ export default function CompanyInfoEditor() {
                             </label>
 
                             <input
-                                type="text"
-                                name="address1"
-                                value={companyInfo.address[0]?.address || ''}
-                                onChange={(e) => {
-                                    setCompanyInfo(prev => ({ ...prev, address: [{ id: prev.address[0].id, address: e.target.value }, prev.address[1]] }));
-                                }}
-                                placeholder="Nhập địa chỉ 1"
-                                className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+    type="text"
+    name="address1"
+    value={companyInfo.address?.[0]?.address || ''} 
+    onChange={(e) => {
+        setCompanyInfo(prev => {
+            const updatedAddress = [...prev.address]; // Tạo một bản sao của mảng address
+            updatedAddress[0] = { id: prev.address[0]?.id || '', address: e.target.value }; // Cập nhật địa chỉ 1
+            return { ...prev, address: updatedAddress };
+        });
+    }}
+    placeholder="Nhập địa chỉ 1"
+    className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
 
-                            <input
-                                type="text"
-                                name="address2"
-                                value={companyInfo.address[1]?.address || ''}
-                                onChange={(e) => {
-                                    setCompanyInfo(prev => ({ ...prev, address: [prev.address[0], { id: prev.address[1].id, address: e.target.value }] }));
-                                }}
-                                placeholder="Nhập địa chỉ 2"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+<input
+    type="text"
+    name="address1"
+    value={companyInfo.address?.[1]?.address || ''}  
+    onChange={(e) => {
+        setCompanyInfo(prev => {
+            const updatedAddress = [...prev.address]; // Tạo một bản sao của mảng address
+            updatedAddress[1] = { id: prev.address[1]?.id || '', address: e.target.value }; // Cập nhật địa chỉ 1
+            return { ...prev, address: updatedAddress };
+        });
+    }}
+    placeholder="Nhập địa chỉ 1"
+    className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
                         </div>
 
                         <div>

@@ -25,5 +25,6 @@ return [
     "DB_USER" => $_ENV["DB_USER"] ?? "",
     "DB_PASSWORD" => $_ENV["DB_PASSWORD"] ?? "",
     "JWT_SECRET" => $_ENV["JWT_SECRET"] ?? "",
+    "BASE_URL" => $_ENV["BASE_URL"] ?? "",
 ];
 ?>

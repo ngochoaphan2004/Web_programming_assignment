@@ -21,18 +21,18 @@ class UserController {
             echo json_encode(["success" => false, "message" => "No data received from the form"]);
             exit;
         }
-        $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
         $name = trim($_POST['name'] ?? '');
         $dob = trim($_POST['dob'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $address = trim($_POST['address'] ?? '');
-        if (empty($name) || empty($email) || empty($password) || empty($username) || empty($dob) || empty($phone) || empty($address)) {
+        $gender =trim($_POST['gender'] ?? '');
+        if (empty($name) || empty($email) || empty($password) || empty($dob) || empty($phone) || empty($address) || empty($gender)) {
             echo json_encode(["success" => false, "message" => "Invalid data"]);
             return;
         }
-        $avatarPath = __DIR__ . 'uploads/default.jpg';
+        $avatarPath = 'default.png';
         $userModel = new User();
         if ($userModel->getUserByEmail($email)) {
             echo json_encode(["success" => false, "message" => "Email already exists"]);
@@ -40,7 +40,7 @@ class UserController {
         }
 
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        if ($userModel->createUserWithPassword($name, $email, $hashedPassword, username: $username, avatar: $avatarPath, dob: $dob, phone: $phone, address: $address)) {
+        if ($userModel->createUserWithPassword($name, $email, $hashedPassword, avatar: $avatarPath, dob: $dob, phone: $phone, address: $address, gender: $gender)) {
             echo json_encode(["success" => true, "message" => "Registration successful"]);
         } else {
             echo json_encode(["success" => false, "message" => "Registration failed"]);
@@ -74,19 +74,28 @@ class UserController {
             echo json_encode(["success" => false, "message" => "Incorrect password"]);
             return;
         }
+        $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/api/src/public';
+
+        // Giả sử $user['avatar'] chứa tên file
+        $avatarFile = basename($user['avatar']); // Lấy tên file thôi, tránh đường dẫn tuyệt đối
+
+        // Nếu có avatar thì tạo URL
+        $avatarUrl = $avatarFile
+            ? $baseUrl . '/uploads/' . rawurlencode($avatarFile)
+            : null;
 
         session_start();
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
         $_SESSION['name'] = $user['name'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['avatar'] = $avatarUrl;
         $_SESSION['role'] = $user['role'];
+
         echo json_encode([
             "success" => true,
             "message" => "Login successful",
             "user" => [
                 "id" => $user['id'],
-                "username" => $user['username'],
                 "email" => $user['email'],
                 "avatar" => $user['avatar'],
                 "role" => $user['role']
@@ -121,48 +130,14 @@ class UserController {
         }
     
         $name = trim($_POST['name'] ?? $user['name']);
-        // $email    = trim($_POST['email'] ?? $user['email']);
         $dob = trim($_POST['dob'] ?? $user['dob']);
         $phone = trim($_POST['phone'] ?? $user['phone']);
         $address = trim($_POST['address'] ?? $user['address']);
-        $username = trim($_POST['username'] ?? $user['username']);
-        // $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : $user['password'];
-        echo json_encode($_POST['username']);
+        $gender = trim($_POST['gender'] ?? $user['gender']);
+
         // Handle avatar (if any)
-        $avatarPath = $user['avatar']; // Keep old avatar if no new image is provided
-        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-            $uploadDir = 'uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-    
-            $file = $_FILES['avatar'];
-            $fileName = uniqid() . '-' . basename($file['name']);
-            $targetPath = $uploadDir . $fileName;
-    
-            // Check valid file format
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-            if (!in_array($file['type'], $allowedTypes)) {
-                echo json_encode(['success' => false, 'message' => 'Only PNG, JPG images are allowed']);
-                return;
-            }
-    
-            // Check file size (max 5MB)
-            if ($file['size'] > 5 * 1024 * 1024) {
-                echo json_encode(['success' => false, 'message' => 'File too large, max 5MB']);
-                return;
-            }
-    
-            // Save file
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                $avatarPath = $targetPath;
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Error saving file']);
-                return;
-            }
-        }
-    
-        $stmt = $userModel->updateProfile($user_id, $name, $username, $dob, $phone, $address);
+        
+        $stmt = $userModel->updateProfile($user_id, $name,$dob, $phone, $address,$gender);
     
         if ($stmt) {
             echo json_encode(["success" => true, "message" => "Profile updated successfully"]);
@@ -220,23 +195,52 @@ class UserController {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
-    
-        $avatarPath = $user['avatar']; 
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-            $avatarUpload = handleAvatarUpload($_FILES['avatar']);
-            if (!$avatarUpload['success']) {
-                echo json_encode(['success' => false, 'message' => $avatarUpload['message']]);
+            $uploadDir = __DIR__ . '/../../src/public/uploads/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $file = $_FILES['avatar'];
+            $fileName = uniqid() . '-' . basename($file['name']);
+            $targetPath = $uploadDir . $fileName; // đường vật lý
+            $avatarPath = 'public/uploads/' . $fileName;
+    
+            // Check valid file format
+            $allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+            if (!in_array($file['type'], $allowedTypes)) {
+                echo json_encode(['success' => false, 'message' => 'Only PNG, JPG images are allowed']);
                 return;
             }
-            $avatarPath = $avatarUpload['path'];
+    
+            // Check file size (max 5MB)
+            if ($file['size'] > 5 * 1024 * 1024) {
+                echo json_encode(['success' => false, 'message' => 'File too large, max 5MB']);
+                return;
+            }
+            
+            // Save file
+            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                $avatarPath = $targetPath;
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error saving file']);
+                return;
+            }
         }
-        $stmt = $userModel->updateAvatar($user_id, $avatarPath);
+        else {
+            echo json_encode(["success" => false, "message" => "Avatar update failed"]);
+            return;
+        }
+        // Cập nhật avatar mới trong cơ sở dữ liệu
+        $stmt = $userModel->updateAvatar($user_id, $fileName);
         if ($stmt) {
-            echo json_encode(["success" => true, "message" => "Avatar updated successfully"]);
+            $_SESSION['avatar']  = $_ENV['BASE_URL'] . $fileName;
+            echo json_encode(["success" => true, "message" => "Avatar updated successfully", "user" => $user, "avatar" => $avatarPath]);
         } else {
             echo json_encode(["success" => false, "message" => "Avatar update failed"]);
         }
     }
+    
 
     public function changePassword() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

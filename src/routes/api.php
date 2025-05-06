@@ -5,7 +5,8 @@ require_once '../controllers/products.php';
 require_once '../controllers/CartController.php';
 require_once '../controllers/OrderController.php';
 require_once '../controllers/shop.php';
-
+require_once '../controllers/banner.php';
+require_once '../controllers/intro.php';
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
@@ -25,7 +26,8 @@ $productController = new ProductController();
 $cartController = new CartController();
 $orderController = new OrderController();
 $shopController = new ShopController();
-
+$bannerController = new BannerController();
+$introController = new IntroController();
 
 
 if ($requestMethod == 'OPTIONS') {
@@ -38,7 +40,9 @@ switch (true) {
     case $uri === 'user/login' && $requestMethod === 'POST':
         $userController->login();
         break;
-
+    case $uri === 'user/now'  && $requestMethod === 'GET':
+        $userController->getUser();
+        break;
     case $uri === 'user/register' && $requestMethod === 'POST':
         $userController->register();
         break;
@@ -60,8 +64,8 @@ switch (true) {
     case $uri === 'user' && $requestMethod === 'DELETE':
         $userController->deleteUser();
         break;
-    case $uri === 'users/avatar' && $requestMethod === 'POST':
-        $userController->uploadAvatar();
+    case $uri === 'user/avatar' && $requestMethod === 'POST':
+        $userController->changeAvatar();
         break;
     case $uri === 'users/change-password' && $requestMethod === 'POST':
         $userController->changePassword();
@@ -144,6 +148,11 @@ switch (true) {
     case $uri === 'cart' && $requestMethod === 'GET':
         $cartController->getCart();
         break;
+    
+    // BANNER
+    case $uri === 'banner' && $requestMethod === 'GET':
+        $bannerController->getBanner();
+        break;
 
     /* thêm sp vào giỏ */
     case $uri === 'cart/add' && $requestMethod === 'POST':
@@ -207,6 +216,10 @@ switch (true) {
             case $uri === 'shop/info/logo' && $requestMethod === 'POST':
                 $shopController->changeLogo();
                 break;
+    // INTRO
+    case $uri === 'introduce' && $requestMethod === 'GET':
+        $introController->getIntroduceData();
+        break;
     // DEFAULT
     default:
         http_response_code(404);
