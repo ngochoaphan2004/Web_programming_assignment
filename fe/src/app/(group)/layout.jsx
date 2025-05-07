@@ -24,15 +24,9 @@ function LayoutWithAuth({ children }) {
     );
   }
   return (
-<<<<<<< HEAD
-    <div id="main" className="layout-horizontal">
-      <Header authen={authen} user={user} admin={admin} />
-      <div className="page-content container bg-white rounded-md">
-=======
     <div id="main" className="layout-horizontal flex flex-col">
       <Header authen={authen} user={user} admin={admin} />
       <div className="page-content container bg-white rounded-md flex-1">
->>>>>>> main
         {children}
       </div>
       <Footter />
