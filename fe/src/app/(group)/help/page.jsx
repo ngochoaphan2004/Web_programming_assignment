@@ -433,7 +433,6 @@ const HelpPage = () => {
                                 <p className="text-sm text-gray-500 px-4 py-2">Không có yêu cầu nào.</p>
                             )}
                         </div>
-
                     ))}
 
                     {/* Modal xem chi tiết */}

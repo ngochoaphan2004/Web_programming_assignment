@@ -86,7 +86,7 @@ export default function SigninPage() {
 
   return (
     <div className="row align-items-center justify-content-center">
-      <div id="auth" className="hiddenscroll col-lg-6 col-12">
+      <div id="auth" className="hiddenscroll col-lg-6 col-12 content-center">
         <div className="auth-left">
           <h1 className="auth-title">Sign Up</h1>
           <p className="auth-subtitle mb-5">Input your data to register to our website.</p>

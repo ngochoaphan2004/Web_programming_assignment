@@ -2,7 +2,7 @@
 export default function SigninPage() {
   return (
     <div className="row align-items-center justify-content-center">
-      <div id="auth" className="col-lg-5 col-12">
+      <div id="auth" className="col-lg-5 col-12 content-center">
         <div className="auth-left">
         <h1 className="auth-title">Forgot Password</h1>
             <p className="auth-subtitle mb-5">Input your email and we will send you reset password link.</p>
