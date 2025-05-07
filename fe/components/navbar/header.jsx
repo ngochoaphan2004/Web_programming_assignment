@@ -28,6 +28,8 @@ function TempHeader(props) {
     const [authenUrl, setAuthenUrl] = useState("");
     const [isOpen, setSecondNB] = useState(true);
     const [avatar, setAvatar] = useState("/avatar.png");
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+
     const pathname = usePathname();
     const handleLogout = async () => {
         try {
@@ -47,8 +49,10 @@ function TempHeader(props) {
         }
     };
     useEffect(() => {
-        setAvatar(process.env.NEXT_PUBLIC_BASE_BE_URL + props.user.avatar)
-        
+        if (props.user && props.user.avatar) {
+            setAvatar(process.env.NEXT_PUBLIC_BASE_BE_URL + props.user.avatar);
+        }
+
         if (props.admin) {
             setAuthenUrl(pathname);
         }
@@ -125,40 +129,91 @@ function TempHeader(props) {
                         </>
                     }
 
-                    {/* QUICK SEARCH + nút chi tiết */}
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            const kw = e.target.kw.value.trim();
-                            if (kw) window.location.href = `/search?kw=${encodeURIComponent(kw)}`;
-                        }}
-                        className="hidden md:flex items-center gap-2"
-                    >
-                        {/* ô nhập */}
-                        <input
-                            name="kw"
-                            placeholder="Quick search and Enter"
-                            autoComplete="off"
-                            className="border px-2 py-1 rounded w-48 md:w-60"
-                        />
+                    {isSearchVisible && (
+                        <div>
+                            {/* Overlay */}
+                            <div
+                                className="absolute inset-0 bg-black opacity-50 z-3"
+                                onClick={() => setIsSearchVisible(false)} // Đóng modal khi click vào phần tối
+                            ></div>
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    initial={{
+                                        opacity: 0.5,
+                                        x: 100,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        x: 0,
+                                    }}
+                                    exit={{
+                                        opacity: 0.5,
+                                        x: 100,
+                                    }}
+                                    transition={{
+                                        duration: 0.5,
+                                    }}
+                                    className="absolute inset-0 flex items-center justify-end z-50"
+                                >
 
-                        {/* nút tìm chi tiết */}
-                        {/* <a
-                            href="/search"
-                            title="Tìm kiếm chi tiết"
-                            className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700
-                                text-white text-sm px-3 py-[6px] rounded"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round"
-                                    d="M8 4h13M8 9h13M8 14h13M8 19h13M3 4h.01M3 9h.01M3 14h.01M3 19h.01" />
-                            </svg>
-                            Chi tiết
-                        </a> */}
-                    </form>
+
+                                    {/* Modal */}
+                                    <div className="bg-white shadow-lg rounded-w-lg p-4 h-[100vh] w-full md:w-[500px] relative">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className="text-xl font-semibold">Tìm kiếm</span>
+                                            <button
+                                                className="text-xl text-gray-600 hover:text-gray-800"
+                                                onClick={() => setIsSearchVisible(false)} // Đóng modal khi click nút X
+                                            >
+                                                X
+                                            </button>
+                                        </div>
+
+                                        <input
+                                            name="kw"
+                                            placeholder="Quick search and Enter"
+                                            autoComplete="off"
+                                            className="border px-3 py-2 rounded-lg shadow-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
+
+                                        <a
+                                            href="/search"
+                                            title="Tìm kiếm chi tiết"
+                                            className="w-fit mt-2 inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-[6px] rounded-lg shadow-md"
+                                        >
+                                            Chi tiết
+                                        </a>
+                                    </div>
+
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                    )}
+
+
 
                     <div className="header-top-right">
+                        {/* QUICK SEARCH + nút chi tiết */}
+                        {!props.admin &&
+                            (
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const kw = e.target.kw.value.trim();
+                                        if (kw) window.location.href = `/search?kw=${encodeURIComponent(kw)}`;
+                                    }}
+                                    className="flex items-center gap-2"
+                                >
+                                    <button
+                                        type="button"
+                                        className="text-gray-500"
+                                        onClick={() => setIsSearchVisible(!isSearchVisible)} // Toggle trạng thái hiển thị input
+                                    >
+                                        <img src="/search.png" alt="Tìm kiếm" className="w-[12px] md:w-[20px] h-auto" />
+                                    </button>
+                                </form>
+                            )
+                        }
 
                         {!props.authen ? (
                             <div className="flex flex-row gap-3 sm:gap-4 items-center">
@@ -261,7 +316,7 @@ function TempHeader(props) {
             </div>
 
 
-        </header>
+        </header >
     );
 }
 
@@ -282,7 +337,7 @@ export default function Header(props) {
                     duration: 0.2,
                 }}
             >
-                <TempHeader {...props}/>
+                <TempHeader {...props} />
             </motion.div>
         </AnimatePresence>
     )
