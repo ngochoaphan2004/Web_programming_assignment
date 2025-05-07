@@ -46,11 +46,9 @@ function TempHeader(props) {
     useEffect(() => {
         if (props.admin) {
             setAuthenUrl(pathname);
-            console.log("admin", pathname);
         }
         else {
             setUrl(pathname);
-            console.log("user", pathname);
         }
 
     }, [])
