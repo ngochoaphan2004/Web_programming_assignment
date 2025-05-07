@@ -1,6 +1,7 @@
 <?php
 function handleAvatarUpload($file) {
-    $uploadDir = 'uploads/';
+    $uploadDir = __DIR__ . '/../public/uploads/';
+    $urlDir    = '/src/public/uploads/';
 
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
@@ -19,7 +20,9 @@ function handleAvatarUpload($file) {
     }
 
     if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-        return ['success' => true, 'path' => $targetPath];
+        $imagePath = $urlDir . $fileName;  
+
+        return ['success' => true, 'path' => $imagePath];
     } else {
         return ['success' => false, 'message' => 'Lỗi khi lưu file'];
     }

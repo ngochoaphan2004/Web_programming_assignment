@@ -86,9 +86,12 @@ class ShopController
                 echo json_encode(['success' => false, 'message' => $logoUpload['message']]);
                 return;
             }
-            if (!empty($logoPath) && file_exists($logoPath)) {
-                unlink($logoPath);
+
+            $path = '../..'.$logoPath;
+            if (!empty($logoPath) && file_exists($path)) {
+                unlink($path);
             }
+
             $logoPath = $logoUpload['path'];
         }
         $stmt = $this->shop->updateLogo($logoPath);

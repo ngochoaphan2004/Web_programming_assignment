@@ -45,6 +45,10 @@ switch (true) {
         $userController->getUsers();
         break;
 
+    case preg_match('/^users\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $userController->getUsersByID($matches[1]);
+        break;
+
     case $uri === 'user/profile' && $requestMethod === 'POST':
         $userController->editProfile();
         break;
@@ -57,9 +61,6 @@ switch (true) {
         break;
     case $uri === 'user' && $requestMethod === 'DELETE':
         $userController->deleteUser();
-        break;
-    case $uri === 'users/avatar' && $requestMethod === 'POST':
-        $userController->uploadAvatar();
         break;
     case $uri === 'users/change-password' && $requestMethod === 'POST':
         $userController->changePassword();
