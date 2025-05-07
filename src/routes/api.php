@@ -4,11 +4,13 @@ require_once '../controllers/contact.php';
 require_once '../controllers/products.php';
 require_once '../controllers/CartController.php';
 require_once '../controllers/OrderController.php';
+require_once '../controllers/shop.php';
+
 // Cho phép các phương thức và header phù hợp
 // $basePath = '/BTL_LTW/src/public'; 
 // $basePath = '/api';
 // $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$basePath = dirname($_SERVER['SCRIPT_NAME']); 
+$basePath = dirname($_SERVER['SCRIPT_NAME']);
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
 $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -21,6 +23,7 @@ $contactController = new ContactController();
 $productController = new ProductController();
 $cartController = new CartController();
 $orderController = new OrderController();
+$shopController = new ShopController();
 
 
 if ($requestMethod == 'OPTIONS') {
@@ -42,6 +45,10 @@ switch (true) {
         $userController->getUsers();
         break;
 
+    case preg_match('/^users\/(\d+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $userController->getUsersByID($matches[1]);
+        break;
+
     case $uri === 'user/profile' && $requestMethod === 'POST':
         $userController->editProfile();
         break;
@@ -54,9 +61,6 @@ switch (true) {
         break;
     case $uri === 'user' && $requestMethod === 'DELETE':
         $userController->deleteUser();
-        break;
-    case $uri === 'users/avatar' && $requestMethod === 'POST':
-        $userController->uploadAvatar();
         break;
     case $uri === 'users/change-password' && $requestMethod === 'POST':
         $userController->changePassword();
@@ -72,6 +76,7 @@ switch (true) {
             $contactController->getAllContacts();
         }
         break;
+        
     case $uri === 'contacts' && $requestMethod === 'POST':
         $contactController->createContact();
         break;
@@ -180,20 +185,26 @@ switch (true) {
     case preg_match('/^orders\\/(\\d+)\\/pay$/',$uri,$m) && $requestMethod === 'POST':
         $orderController->pay($m[1]);
         break;
-
-
-
-
-
-
+    // SHOP INFOMATION
+    
+    case $uri === 'shop/info' && $requestMethod === 'GET':
+        $shopController->getShopInfo();
+        break;
+    case $uri === 'shop/info/update' && $requestMethod === 'POST':
+        $shopController->updateShopInfo();
+        break;
+    case $uri === 'shop/info/logo' && $requestMethod === 'POST':
+        $shopController->changeLogo();
+        break;
 
     // lấy sản phẩm mà user đó order
     case $uri === 'user/orders' && $requestMethod === 'GET':
         $orderController->getUserOrders();
         break;
+        
     // DEFAULT
     default:
         http_response_code(404);
-        echo json_encode(["success" => false, "message" => "Route không tồn tại"]);
+        echo json_encode(["success" => false, "message" => "Route không tồn tại " . $uri]);
         break;
 }

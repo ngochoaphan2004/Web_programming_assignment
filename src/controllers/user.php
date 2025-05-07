@@ -2,14 +2,24 @@
 require_once '../models/user.php';
 require_once '../core/auth.php';
 require_once '../helpers/avatarHandle.php';
-class UserController {
-    public function getUsers() {
+class UserController
+{
+    public function getUsers()
+    {
         $userModel = new User();
         $users = $userModel->getAllUsers();
         echo json_encode(["success" => true, "data" => $users], JSON_PRETTY_PRINT);
     }
+ 
+    public function getUsersByID($id)
+    {
+        $userModel = new User();
+        $users = $userModel->getUserByIdByClient($id);
+        echo json_encode(["success" => true, "data" => $users], JSON_PRETTY_PRINT);
+    }
 
-    public function register() {
+    public function register()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
@@ -48,7 +58,8 @@ class UserController {
     }
 
 
-    public function login() {
+    public function login()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
@@ -57,12 +68,12 @@ class UserController {
 
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
-    
+
         if (empty($email) || empty($password)) {
             echo json_encode(["success" => false, "message" => "Email and password are required"]);
             return;
         }
-    
+
         $userModel = new User();
         $user = $userModel->login($email, $password);
         if (!$user) {
@@ -89,37 +100,38 @@ class UserController {
                 "username" => $user['username'],
                 "email" => $user['email'],
                 "avatar" => $user['avatar'],
-                "role" => $user['role']
+                "role" => $user['role'],
+                "avaPath" => $user['avatar']
             ]
         ]);
     }
-    
-    
 
-    public function editProfile() {
+
+    public function editProfile()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             exit;
         }
-    
+
         session_start();
-        $user_id = $_SESSION['user_id'] ?? null; 
-        
+        $user_id = $_SESSION['user_id'] ?? null;
+
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User is not logged in"]);
             return;
         }
-    
+
         $userModel = new User();
-    
+
         $user = $userModel->getUserById($user_id);
-    
+
         if (!$user) {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
-    
+
         $name = trim($_POST['name'] ?? $user['name']);
         // $email    = trim($_POST['email'] ?? $user['email']);
         $dob = trim($_POST['dob'] ?? $user['dob']);
@@ -127,101 +139,88 @@ class UserController {
         $address = trim($_POST['address'] ?? $user['address']);
         $username = trim($_POST['username'] ?? $user['username']);
         // $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : $user['password'];
-        echo json_encode($_POST['username']);
+
         // Handle avatar (if any)
-        $avatarPath = $user['avatar']; // Keep old avatar if no new image is provided
+        $avaPath = $user['avatar']; // Keep old avatar if no new image is provided
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-            $uploadDir = 'uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-    
-            $file = $_FILES['avatar'];
-            $fileName = uniqid() . '-' . basename($file['name']);
-            $targetPath = $uploadDir . $fileName;
-    
-            // Check valid file format
-            $allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-            if (!in_array($file['type'], $allowedTypes)) {
-                echo json_encode(['success' => false, 'message' => 'Only PNG, JPG images are allowed']);
+            $avaUpload = handleAvatarUpload($_FILES['avatar']);
+
+            if (!$avaUpload['success']) {
+                echo json_encode(['success' => false, 'message' => $avaUpload['message']]);
                 return;
             }
-    
-            // Check file size (max 5MB)
-            if ($file['size'] > 5 * 1024 * 1024) {
-                echo json_encode(['success' => false, 'message' => 'File too large, max 5MB']);
-                return;
+
+            $path = '../..'.$avaPath;
+            if (!empty($avaPath) && file_exists($path)) {
+                unlink($path);
             }
-    
-            // Save file
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                $avatarPath = $targetPath;
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Error saving file']);
-                return;
-            }
+            $avaPath = $avaUpload['path'];
+            $tempStmt = $userModel->updateAvatar($user_id, $avaPath);
         }
-    
+
         $stmt = $userModel->updateProfile($user_id, $name, $username, $dob, $phone, $address);
-    
+
         if ($stmt) {
-            echo json_encode(["success" => true, "message" => "Profile updated successfully"]);
+            echo json_encode(["success" => true, "message" => "Profile updated successfully", "avapath" => $avaPath]);
         } else {
             echo json_encode(["success" => false, "message" => "Profile update failed"]);
         }
     }
 
-    public function logout() {
+    public function logout()
+    {
         session_start();
         session_destroy();
         echo json_encode(["success" => true, "message" => "Logged out successfully"]);
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         session_start();
-        $user_id = $_SESSION['user_id'] ?? null; 
-        
+        $user_id = $_SESSION['user_id'] ?? null;
+
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User is not logged in"]);
             return;
         }
-    
+
         $userModel = new User();
         $user = $userModel->getUserById($user_id);
-    
+
         if (!$user) {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
-    
+
         echo json_encode(["success" => true, "data" => $user]);
     }
 
-    public function changeAvatar() {
+    public function changeAvatar()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             exit;
         }
-    
+
         session_start();
-        $user_id = $_SESSION['user_id'] ?? null; 
-        
+        $user_id = $_SESSION['user_id'] ?? null;
+
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User is not logged in"]);
             return;
         }
-    
+
         $userModel = new User();
-    
+
         $user = $userModel->getUserById($user_id);
-    
+
         if (!$user) {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
-    
-        $avatarPath = $user['avatar']; 
+
+        $avatarPath = $user['avatar'];
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
             $avatarUpload = handleAvatarUpload($_FILES['avatar']);
             if (!$avatarUpload['success']) {
@@ -238,37 +237,38 @@ class UserController {
         }
     }
 
-    public function changePassword() {
+    public function changePassword()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             exit;
         }
-    
+
         session_start();
-        $user_id = $_SESSION['user_id'] ?? null; 
-        
+        $user_id = $_SESSION['user_id'] ?? null;
+
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User is not logged in"]);
             return;
         }
-    
+
         $userModel = new User();
-    
+
         $user = $userModel->getUserById($user_id);
-    
+
         if (!$user) {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
-    
+
         $newPassword = trim($_POST['new_password'] ?? '');
-    
+
         if (empty($newPassword)) {
             echo json_encode(["success" => false, "message" => "New password is required"]);
             return;
         }
-    
+
         if ($userModel->changePassword($user_id, $newPassword)) {
             echo json_encode(["success" => true, "message" => "Password changed successfully"]);
         } else {
@@ -276,16 +276,17 @@ class UserController {
         }
     }
 
-    public function deleteUser() {
+    public function deleteUser()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             exit;
         }
-    
+
         session_start();
-        $user_id = $_SESSION['user_id'] ?? null; 
-        
+        $user_id = $_SESSION['user_id'] ?? null;
+
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User is not logged in"]);
             return;
@@ -296,14 +297,14 @@ class UserController {
             return;
         }
         $userModel = new User();
-    
+
         $user = $userModel->getUserById($user_id);
-    
+
         if (!$user) {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
-    
+
         if ($userModel->deleteUser($user_id)) {
             session_destroy();
             echo json_encode(["success" => true, "message" => "Delete user successfull"]);
@@ -311,10 +312,10 @@ class UserController {
             echo json_encode(["success" => false, "message" => "Delete user unsuccessfull"]);
         }
     }
-    public function checkSession() {
+    public function checkSession()
+    {
         $authService = new AuthService();
         $sessionStatus = $authService->checkSession();
         echo json_encode($sessionStatus);
     }
 }
-?>

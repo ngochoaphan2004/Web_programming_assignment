@@ -3,7 +3,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import axiosConfig from "@/axiosConfig";
-
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 // Tạo context
 const AuthContext = createContext();
 
@@ -13,28 +14,41 @@ export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState("");
+  const urlPath = usePathname()
+  const router = useRouter();
 
   useEffect(() => {
-    console.log("Đang gọi API kiểm tra session...");
-    axiosConfig.get("/user/session-check", {
-      withCredentials: true, // Giống fetch: credentials: 'include'
-    })
-      .then((response) => {
-        const data = response.data;
-        console.log("Kết quả session:", data);
-        setAuthen(data.authenticated);
-        setAdmin(data.admin);
-        setUser(data.user);
-        setLoading(false);
+    if (!['/sign-in', '/sign-up', '/forgot-password'].includes(urlPath)) {
+      console.log("Đang gọi API kiểm tra session...");
+      axiosConfig.get("/user/session-check", {
+        withCredentials: true, // Giống fetch: credentials: 'include'
       })
-      .catch((error) => {
-        console.error("Lỗi khi gọi API session-check:", error);
-        setLoading(false);
-      });
+        .then((response) => {
+          const data = response.data;
+          console.log("Kết quả session:", data);
+
+          if ((urlPath === '/profile' && !data.authenticated) ||
+            (urlPath.startsWith('/admin') && !data.admin)
+          ) {
+            router.push('/404')
+            return;
+          }
+
+          setAuthen(data.authenticated);
+          setAdmin(data.admin);
+          setUser(data.user);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Lỗi khi gọi API session-check:", error);
+          setLoading(false);
+          router.push('/404')
+        });
+    }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authen, admin, loading,user}}>
+    <AuthContext.Provider value={{ authen, admin, loading, user }}>
       {children}
     </AuthContext.Provider>
   );
