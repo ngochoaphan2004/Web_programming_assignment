@@ -136,11 +136,12 @@ function TempHeader(props) {
                         <input
                             name="kw"
                             placeholder="Quick search and Enter"
+                            autoComplete="off"
                             className="border px-2 py-1 rounded w-48 md:w-60"
                         />
 
                         {/* nút tìm chi tiết */}
-                        <a
+                        {/* <a
                             href="/search"
                             title="Tìm kiếm chi tiết"
                             className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700
@@ -152,7 +153,7 @@ function TempHeader(props) {
                                     d="M8 4h13M8 9h13M8 14h13M8 19h13M3 4h.01M3 9h.01M3 14h.01M3 19h.01" />
                             </svg>
                             Chi tiết
-                        </a>
+                        </a> */}
                     </form>
 
                     <div className="header-top-right">

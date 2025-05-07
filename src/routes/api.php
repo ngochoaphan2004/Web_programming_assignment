@@ -196,15 +196,14 @@ switch (true) {
         $shopController->changeLogo();
         break;
 
-
-
     // lấy sản phẩm mà user đó order
     case $uri === 'user/orders' && $requestMethod === 'GET':
         $orderController->getUserOrders();
         break;
+        
     // DEFAULT
     default:
         http_response_code(404);
-        echo json_encode(["success" => false, "message" => "Route không tồn tại"]);
+        echo json_encode(["success" => false, "message" => "Route không tồn tại " . $uri]);
         break;
 }
