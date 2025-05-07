@@ -73,7 +73,7 @@ export default function SigninPage() {
 
       if (response.data.success) {
         alert("Register successful!");
-        window.location.href = "/";
+        window.location.href = "/sign-in";
       } else {
         alert(response.data.message || "Registration failed.");
       }

@@ -23,9 +23,11 @@ const AdminNav = [
 
 
 function TempHeader(props) {
+
     const [url, setUrl] = useState("");
     const [authenUrl, setAuthenUrl] = useState("");
     const [isOpen, setSecondNB] = useState(true);
+    const [avatar, setAvatar] = useState("/avatar.png");
     const pathname = usePathname();
     const handleLogout = async () => {
         try {
@@ -34,6 +36,7 @@ function TempHeader(props) {
             });
 
             if (response.data.success) {
+                setAvatar("/avatar.png")
                 window.location.href = "/";
             } else {
                 alert("Logout failed");
@@ -44,13 +47,14 @@ function TempHeader(props) {
         }
     };
     useEffect(() => {
+        setAvatar(process.env.NEXT_PUBLIC_BASE_BE_URL + props.user.avatar)
+        
         if (props.admin) {
             setAuthenUrl(pathname);
         }
         else {
             setUrl(pathname);
         }
-
     }, [])
 
     const [dropdown, setDropdown] = useState(false)
@@ -179,7 +183,13 @@ function TempHeader(props) {
                                     className="flex items-center gap-2 focus:outline-none"
                                 >
                                     <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
-                                        <img src="/avatar.png" alt="Avatar" className="w-full h-full object-cover" />
+                                        <img
+                                            src={avatar}
+                                            onError={(e) => {
+                                                e.target.src = '/avatar.png';
+                                            }}
+                                            alt="Avatar"
+                                            className="w-full h-full object-cover" />
                                     </div>
                                     <div className="hidden sm:block">
                                         <h6
@@ -272,7 +282,7 @@ export default function Header(props) {
                     duration: 0.2,
                 }}
             >
-                <TempHeader {...props} />
+                <TempHeader {...props}/>
             </motion.div>
         </AnimatePresence>
     )

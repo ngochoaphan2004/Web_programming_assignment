@@ -6,6 +6,8 @@ import axiosConfig from '@/axiosConfig';
 import ConfirmCustom from '../../../../components/comfirm/comfirm';
 import { AnimatePresence, motion } from "motion/react"
 
+const BEHOST = process.env.NEXT_PUBLIC_BASE_BE_URL
+
 export default function CompanyInfoEditor() {
     const [companyInfo, setCompanyInfo] = useState({
         id: "",
@@ -14,10 +16,11 @@ export default function CompanyInfoEditor() {
         email: "",
         description: "",
         address: [],
-        logo: '/logo.png'
+        logo: ""
     });
 
     const [logoPreview, setLogoPreview] = useState(null);
+    const [file, setFile] = useState(null)
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isHelper, setIsHelper] = useState(false);
 
@@ -32,23 +35,51 @@ export default function CompanyInfoEditor() {
     const handleConfirmSubmit = async () => {
         setIsSubmitting(true);
 
+        let isSuccess = true
+
         await axiosConfig.post('shop/info/update', { ...companyInfo }, {
             withCredentials: true,
         })
             .then((response) => {
                 console.log(response);
                 if (!response.data.success) {
-                    setShowError(true)
-                    setIsSubmitting(false);
-                    return;
+                    isSuccess = false
                 }
-                setIsSubmitting(false);
-                setShowSuccess(true);
             })
             .catch(() => {
                 setShowError(true)
             })
-        setShowConfirm(false);
+
+        if (file) {
+            const fd = new FormData();
+            if (file) fd.append("logo", file);
+
+            await axiosConfig.post('shop/info/logo', fd, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                }
+            })
+                .then((response) => {
+                    console.log(response);
+                    if (!response.data.success) {
+                        isSuccess = false
+                    }
+                })
+                .catch(() => {
+                    setShowError(true)
+                })
+        }
+
+        if (isSuccess) {
+            setIsSubmitting(false);
+            setShowSuccess(true);
+            setShowConfirm(false);
+        }
+        else {
+            setShowError(true)
+            setIsSubmitting(false);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -62,6 +93,8 @@ export default function CompanyInfoEditor() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setLogoPreview(reader.result);
+                console.log(reader.result);
+                setFile(file)
             };
             reader.readAsDataURL(file);
         }
@@ -80,7 +113,7 @@ export default function CompanyInfoEditor() {
                         phone: data['phone'],
                         address: data['addresses'],
                         description: data['description'],
-                        logo: '/logo.png'
+                        logo: data['logo']
                     })
                 })
         }
@@ -187,11 +220,11 @@ export default function CompanyInfoEditor() {
                             <div className="flex items-start gap-4">
                                 <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center overflow-hidden bg-gray-50">
                                     <img
-                                        src={logoPreview || companyInfo.logo}
+                                        src={logoPreview || BEHOST + companyInfo['logo']}
                                         alt="Logo công ty"
                                         className="max-w-full max-h-full object-contain"
                                         onError={(e) => {
-                                            e.target.src = '/images/default-logo.png';
+                                            e.target.src = '/logo.png';
                                         }}
                                     />
                                 </div>

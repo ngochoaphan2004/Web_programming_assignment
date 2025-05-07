@@ -1,6 +1,9 @@
-import { useState } from "react";
+import axiosConfig from "@/axiosConfig";
+import { useEffect, useState } from "react";
 
-export default function UploadFileAvatar() {
+const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL
+
+export default function UploadFileAvatar({avatar, setFile}) {
     const [logoPreview, setLogoPreview] = useState(null);
 
     const handleLogoUpload = (e) => {
@@ -9,6 +12,7 @@ export default function UploadFileAvatar() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setLogoPreview(reader.result);
+                setFile(file)
             };
             reader.readAsDataURL(file);
         }
@@ -17,11 +21,11 @@ export default function UploadFileAvatar() {
     return (
         <div className="group hover:bg-gray-500 hover:opacity-50 transition-all duration-300 border border-gray-300 flex-1 absolute w-32 h-32 rounded-full relative overflow-hidden">
             <img
-                src={logoPreview || "/../../../../../avatar.png"}
+                src={logoPreview || HOST + avatar}
                 alt="Avatar"
                 className="max-w-full max-h-full object-contain"
                 onError={(e) => {
-                    e.target.src = '/images/default-logo.png';
+                    e.target.src = '/avatar.png';
                 }}
             />
             <input
