@@ -189,7 +189,16 @@ class Product {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);  
     }
-    
+    public function countProductsByCategory(string $category) {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) as total
+            FROM products
+            WHERE category = :category
+        ");
+        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+        $stmt->execute();
+        return (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
     
     
     

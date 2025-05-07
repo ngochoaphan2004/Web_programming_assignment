@@ -71,7 +71,7 @@ class UserController {
         }
 
         if (!password_verify($password, $user['password'])) {
-            echo json_encode(["success" => false, "message" => "Incorrect password"]);
+            echo json_encode(["success" => false, "message" => "Incorrect password", 'password' => $password]);
             return;
         }
         $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/api/src/public';
@@ -228,7 +228,7 @@ class UserController {
             }
         }
         else {
-            echo json_encode(["success" => false, "message" => "Avatar update failed"]);
+            echo json_encode(["success" => false, "message" => "Avatar update failed", 'avatar' => isset($_FILES['avatar'])]);
             return;
         }
         // Cập nhật avatar mới trong cơ sở dữ liệu
@@ -245,7 +245,7 @@ class UserController {
     public function changePassword() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            echo json_encode(["success" => false, "message" => "Method not allowed"]);
+            echo json_encode(["success" => false, "message" => "Phương thức không được hỗ trợ."]);
             exit;
         }
     
@@ -253,7 +253,7 @@ class UserController {
         $user_id = $_SESSION['user_id'] ?? null; 
         
         if (!$user_id) {
-            echo json_encode(["success" => false, "message" => "User is not logged in"]);
+            echo json_encode(["success" => false, "message" => "Bạn chưa đăng nhập."]);
             return;
         }
     
@@ -262,21 +262,30 @@ class UserController {
         $user = $userModel->getUserById($user_id);
     
         if (!$user) {
-            echo json_encode(["success" => false, "message" => "User does not exist"]);
+            echo json_encode(["success" => false, "message" => "Người dùng không tồn tại."]);
             return;
         }
     
         $newPassword = trim($_POST['new_password'] ?? '');
-    
+        $password = trim($_POST['password'] ?? '');
+
+        if (!password_verify($password, $user['password'])) {
+            echo json_encode(["success" => false, "message" => "Sai mật khẩu.", 'password' => $password]);
+            return;
+        }
+        if (password_verify($newPassword, $user['password'])) {
+            echo json_encode(["success" => false, "message" => "Không thể đặt mật khẩu hiện tại.", 'password' => $password]);
+            return;
+        }
         if (empty($newPassword)) {
-            echo json_encode(["success" => false, "message" => "New password is required"]);
+            echo json_encode(["success" => false, "message" => "Mật khẩu mới phải được nhật."]);
             return;
         }
     
         if ($userModel->changePassword($user_id, $newPassword)) {
-            echo json_encode(["success" => true, "message" => "Password changed successfully"]);
+            echo json_encode(["success" => true, "message" => "Thay đổi mật khẩu thành công."]);
         } else {
-            echo json_encode(["success" => false, "message" => "Password change failed"]);
+            echo json_encode(["success" => false, "message" => "Thay đổi mật khẩu thất bại."]);
         }
     }
 

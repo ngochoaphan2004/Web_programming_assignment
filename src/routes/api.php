@@ -5,18 +5,10 @@ require_once '../controllers/products.php';
 require_once '../controllers/CartController.php';
 require_once '../controllers/OrderController.php';
 require_once '../controllers/shop.php';
-<<<<<<< HEAD
 require_once '../controllers/banner.php';
 require_once '../controllers/intro.php';
 require_once '../controllers/question.php';
 
-=======
-
-// Cho phép các phương thức và header phù hợp
-// $basePath = '/BTL_LTW/src/public'; 
-// $basePath = '/api';
-// $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
->>>>>>> main
 $basePath = dirname($_SERVER['SCRIPT_NAME']);
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
@@ -32,13 +24,9 @@ $productController = new ProductController();
 $cartController = new CartController();
 $orderController = new OrderController();
 $shopController = new ShopController();
-<<<<<<< HEAD
 $bannerController = new BannerController();
 $introController = new IntroController();
 $questionController = new QuestionController();
-=======
-
->>>>>>> main
 
 if ($requestMethod == 'OPTIONS') {
     header("HTTP/1.1 204 No Content");
@@ -77,7 +65,7 @@ switch (true) {
     case $uri === 'user/avatar' && $requestMethod === 'POST':
         $userController->changeAvatar();
         break;
-    case $uri === 'users/change-password' && $requestMethod === 'POST':
+    case $uri === 'user/change-password' && $requestMethod === 'POST':
         $userController->changePassword();
         break;
 
@@ -141,14 +129,15 @@ switch (true) {
     case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
         $productController->deleteProduct($matches[1]);
         break;
-    // Lấy sản phẩm theo danh mục
-    case preg_match('/^products\/category\/(.+)$/', $uri, $matches) && $requestMethod === 'GET':
-        $productController->getProductsByCategory($matches[1]);
-        break;
     // Lấy sản phẩm theo danh mục với phân trang
     case preg_match('/^products\/category\/(.+)\/paginate$/', $uri, $matches) && $requestMethod === 'GET':
         $productController->getProductsByCategoryPaginated($matches[1]);
         break;
+    // Lấy sản phẩm theo danh mục
+    case preg_match('/^products\/category\/(.+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $productController->getProductsByCategory($matches[1]);
+        break;
+    
     // Lấy toàn bộ sản phẩm – lần này không phân trang   
     case $uri === 'products/grouped' && $requestMethod === 'GET':
         $productController->getAllProductsGrouped();
@@ -172,6 +161,7 @@ switch (true) {
     case $uri === 'banner' && $requestMethod === 'DELETE':
         $bannerController->deleteBanner();
         break;
+
 
     /* thêm sp vào giỏ */
     case $uri === 'cart/add' && $requestMethod === 'POST':
@@ -230,17 +220,6 @@ switch (true) {
     case $uri === 'user/orders' && $requestMethod === 'GET':
         $orderController->getUserOrders();
         break;
-<<<<<<< HEAD
-            // SHOP INFOMATION
-            case $uri === 'shop/info' && $requestMethod === 'GET':
-                $shopController->getShopInfo();
-                break;
-            case $uri === 'shop/info/update' && $requestMethod === 'POST':
-                $shopController->updateShopInfo();
-                break;
-            case $uri === 'shop/info/logo' && $requestMethod === 'POST':
-                $shopController->changeLogo();
-                break;
     // INTRO
     case $uri === 'introduce' && $requestMethod === 'GET':
         $introController->getIntroduceData();
@@ -307,12 +286,10 @@ switch (true) {
     case preg_match('/^answer\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
         $questionController->deleteAnswer();
         break;
-=======
-        
->>>>>>> main
     // DEFAULT
     default:
         http_response_code(404);
         echo json_encode(["success" => false, "message" => "Route không tồn tại " . $uri]);
         break;
 }
+
