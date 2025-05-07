@@ -1,18 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-<<<<<<< HEAD
 import { useRouter } from 'next/navigation'; // Thêm useRouter để điều hướng
 import '../css.css';
 import axiosConfig from '@/axiosConfig';
 import ConfirmCustom from '../../../../components/comfirm/comfirm';
 import { AnimatePresence, motion } from "motion/react";
-=======
-import '../css.css'
-import axiosConfig from '@/axiosConfig';
-import ConfirmCustom from '../../../../components/comfirm/comfirm';
-import { AnimatePresence, motion } from "motion/react"
->>>>>>> main
 
 export default function CompanyInfoEditor() {
     const router = useRouter(); // Khởi tạo router
@@ -47,11 +40,7 @@ export default function CompanyInfoEditor() {
             .then((response) => {
                 console.log(response);
                 if (!response.data.success) {
-<<<<<<< HEAD
                     setShowError(true);
-=======
-                    setShowError(true)
->>>>>>> main
                     setIsSubmitting(false);
                     return;
                 }
@@ -59,13 +48,8 @@ export default function CompanyInfoEditor() {
                 setShowSuccess(true);
             })
             .catch(() => {
-<<<<<<< HEAD
                 setShowError(true);
             });
-=======
-                setShowError(true)
-            })
->>>>>>> main
         setShowConfirm(false);
     };
 
@@ -85,32 +69,10 @@ export default function CompanyInfoEditor() {
         }
     };
 
-<<<<<<< HEAD
     // Hàm điều hướng tới trang /admin/intro
     const handleNavigateToIntro = () => {
         router.push('/admin/intro');
     };
-=======
-
-    useEffect(() => {
-        async function fetchData() {
-            await axiosConfig.get('shop/info')
-                .then((response) => {
-                    const data = response.data
-                    setCompanyInfo({
-                        id: data['id'],
-                        name: data['name'],
-                        email: data['email'],
-                        phone: data['phone'],
-                        address: data['addresses'],
-                        description: data['description'],
-                        logo: '/logo.png'
-                    })
-                })
-        }
-        fetchData()
-    }, [])
->>>>>>> main
 
     useEffect(() => {
         async function fetchData() {
@@ -175,7 +137,6 @@ export default function CompanyInfoEditor() {
                             <label className="text-sm font-medium text-gray-700 mb-1">
                                 Địa chỉ
                             </label>
-<<<<<<< HEAD
                             <input
                                 type="text"
                                 name="address1"
@@ -186,20 +147,10 @@ export default function CompanyInfoEditor() {
                                         updatedAddress[0] = { id: prev.address[0]?.id || '', address: e.target.value };
                                         return { ...prev, address: updatedAddress };
                                     });
-=======
-
-                            <input
-                                type="text"
-                                name="address1"
-                                value={companyInfo.address[0]?.address || ''}
-                                onChange={(e) => {
-                                    setCompanyInfo(prev => ({ ...prev, address: [{ id: prev.address[0].id, address: e.target.value }, prev.address[1]] }));
->>>>>>> main
                                 }}
                                 placeholder="Nhập địa chỉ 1"
                                 className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
-<<<<<<< HEAD
                             <input
                                 type="text"
                                 name="address2"
@@ -213,18 +164,6 @@ export default function CompanyInfoEditor() {
                                 }}
                                 placeholder="Nhập địa chỉ 2"
                                 className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-=======
-
-                            <input
-                                type="text"
-                                name="address2"
-                                value={companyInfo.address[1]?.address || ''}
-                                onChange={(e) => {
-                                    setCompanyInfo(prev => ({ ...prev, address: [prev.address[0], { id: prev.address[1].id, address: e.target.value }] }));
-                                }}
-                                placeholder="Nhập địa chỉ 2"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
->>>>>>> main
                             />
                         </div>
 

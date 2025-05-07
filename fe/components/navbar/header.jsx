@@ -201,7 +201,7 @@ function TempHeader(props) {
                                             <a href="/profile" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
                                         </li>
                                         <li>
-                                            <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
+                                            <a href="change-password" className="block px-4 py-2 hover:bg-gray-100">Change Password</a>
                                         </li>
                                         <li>
                                             <a href="/cart" className="block px-4 py-2 hover:bg-gray-100">🛒 Giỏ hàng</a>
