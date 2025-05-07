@@ -316,9 +316,7 @@ export default function Home() {
   /* state */
   const [newestProducts, setNewestProducts] = useState([]);
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
-  const [banners, setBanners] = useState([]);
 
-<<<<<<< HEAD
   /* add to cart */
   const handleAddToCart = async (productId) => {
     try {
@@ -332,17 +330,6 @@ export default function Home() {
       showToast("Bạn cần đăng nhập!", "bg-red-600");
     }
   };
-=======
-  /* --- load dữ liệu khi component mount --- */
-  useEffect(() => {
-    axiosConfig.get("/banner")
-      .then((res) => res.data && setBanners(res.data))
-      .catch((err) => console.error("Load banners:", err));
-    /* sản phẩm mới nhất */
-    axiosConfig.get("/products/newest")      // ← API mới
-      .then((res) => res.data.success && setNewestProducts(res.data.data))
-      .catch((err) => console.error("Load newest:", err));
->>>>>>> d3da748 (update)
 
   /* fetch data */
   useEffect(() => {
@@ -398,31 +385,12 @@ export default function Home() {
   /* UI */
   return (
     <div className="bg-white font-sans">
-<<<<<<< HEAD
       {/* banner */}
       <section className="relative overflow-hidden px-4 py-6">
-=======
-
-      {/* Banner */}
-      {/* <section className="relative overflow-hidden px-4 py-6">
->>>>>>> d3da748 (update)
         <Carousel>
           {["banner1", "banner2", "banner3"].map((b) => (
             <Carousel.Item key={b} interval={3000}>
               <img src={`/banner/${b}.png`} className="w-full h-[20vw] object-cover" />
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      </section> */}
-      <section className="relative overflow-hidden px-4 py-6">
-        <Carousel>
-          {banners.map((b, i) => (
-            <Carousel.Item key={i} interval={3000}>
-              <img
-                src={b.image}
-                alt={`banner-${i}`}
-                className="w-full h-[20vw] object-cover"
-              />
             </Carousel.Item>
           ))}
         </Carousel>

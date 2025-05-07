@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import axiosConfig from '../../../axiosConfig';
 import { AnimatePresence, motion } from "motion/react"
-
+import { useRouter } from 'next/navigation';
 const HelpPage = () => {
+    const router = useRouter();
     const [isOpenBH, setIsOpenBH] = useState(false);
     const [isOpenBH1, setIsOpenBH1] = useState(false);
     const [isOpenBH2, setIsOpenBH2] = useState(false);
@@ -364,7 +365,14 @@ const HelpPage = () => {
 
                 <div className="border-t border-gray-300 mb-4"></div>
             </div>
-
+            <div className="text-center">
+            <button
+                onClick={() => router.push('/hoidap')}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md mt-4 hover:bg-blue-700"
+            >
+                Xem thêm
+            </button>
+      </div>
             {/* Liên hệ */}
             <div>
                 <h3 className="font-bold mb-1">Liên hệ chúng tôi</h3>
