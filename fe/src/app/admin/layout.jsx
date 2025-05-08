@@ -10,7 +10,7 @@ import Footter from "../../../components/footter/footer";
 import { AuthProvider, useAuth } from "../contexts/auth"; 
 
 function LayoutWithAuth({ children }) {
-  const { authen, loading, user, admin } = useAuth();
+  const { authen, loading, user, admin, logo } = useAuth();
 
   if (loading) {
     return (
@@ -26,7 +26,7 @@ function LayoutWithAuth({ children }) {
   return (
     <div id="main" className="layout-horizontal flex flex-col">
 
-      <Header authen={authen} user={user} admin={admin} />
+      <Header authen={authen} user={user} admin={admin} logo={logo} />
       <div className="page-content container bg-white rounded-md flex-1">
         {children}
       </div>

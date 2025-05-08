@@ -9,7 +9,6 @@ export default function UploadFileAvatar({avatar, setFile}) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setSelectedFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setLogoPreview(reader.result);
@@ -54,7 +53,7 @@ export default function UploadFileAvatar({avatar, setFile}) {
                 type="file"
                 id="logo-upload"
                 accept="image/*"
-                onChange={handleLogoUpload}
+                onChange={handleFileChange}
                 className="hidden"
             />
             <label

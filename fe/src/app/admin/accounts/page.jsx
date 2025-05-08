@@ -270,8 +270,8 @@ const AdminUserManagementIntro = () => {
       </p>
       <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">
         <li>Xem thông tin chi tiết của từng người dùng</li>
-        <li>Reset mật khẩu trong trường hợp người dùng bị quên hoặc cần hỗ trợ</li>
-        <li>Khóa hoặc mở khóa tài khoản để đảm bảo an toàn hệ thống</li>
+        {/* <li>Reset mật khẩu trong trường hợp người dùng bị quên hoặc cần hỗ trợ</li>
+        <li>Khóa hoặc mở khóa tài khoản để đảm bảo an toàn hệ thống</li> */}
         <li>Theo dõi trạng thái hoạt động và quyền truy cập của người dùng</li>
       </ul>
       <p className="text-xs text-gray-500 mt-3">

@@ -1,5 +1,6 @@
 <?php
 require_once "../models/user.php";
+require_once "../models/shop.php";
 
 class AuthService {
 
@@ -10,7 +11,9 @@ class AuthService {
 
             $userAcc = new User();
             $user = $userAcc->getUserById($_SESSION['user_id']);
-
+            $shop = new Shop();
+            $shopInfo = $shop->getShopInfo();
+            
             return [
                 "authenticated" => true,
                 "admin" => $_SESSION['role'] == 1,
@@ -20,7 +23,8 @@ class AuthService {
                     "email" => $_SESSION['email'],
                     "role" => $_SESSION['role'],
                     "avatar" => $user['avatar']
-                ]
+                ],
+                "logo" => $shopInfo['logo']
             ];
         } else {
             return [
