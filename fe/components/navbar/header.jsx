@@ -6,6 +6,7 @@ import axiosConfig from "@/axiosConfig";
 import { AnimatePresence, motion } from "motion/react"
 
 const UserNav = [
+    { url: "intro", title: "Intro", elementId: 'intro'},
     { url: "/", title: "Home", elementID: "home" },
     { url: "/sneaker", title: "Sneaker", elementID: "sneaker" },
     { url: "/sandal", title: "Sandal", elementID: "sandal" },
@@ -50,17 +51,20 @@ function TempHeader(props) {
         }
     };
     useEffect(() => {
+        console.log("props:", props);
+    
         if (props.user && props.user.avatar) {
-            setAvatar(process.env.NEXT_PUBLIC_BASE_BE_URL + props.user.avatar);
+            setAvatar(props.user.avatar);
+            console.log("avatar", props.user.avatar);
+            console.log("avatar", avatar);
         }
-
+    
         if (props.admin) {
             setAuthenUrl(pathname);
-        }
-        else {
+        } else {
             setUrl(pathname);
         }
-    }, [])
+    }, [props.user, props.admin, pathname]);
 
     const [dropdown, setDropdown] = useState(false)
 

@@ -3,63 +3,89 @@
 import { useEffect, useState } from "react";
 import UploadFileAvatar from "../../../../components/uploadAvatar/uploadAvatar";
 import axiosConfig from "@/axiosConfig";
-import { useAuth } from "@/app/contexts/auth";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const { authen, loading, user, admin } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [dob, setDob] = useState("");
+  const [gender, setGender] = useState("");
+  const [address, setAddress] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [role, setRole] = useState(2);
+  const urlPath = usePathname();
+  const router = useRouter();
 
-  const [file, setFile] = useState(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    dob: "",
-    address: "",
-    avatar: ""
-  });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axiosConfig.get("/user/now", {
+          withCredentials: true,
+        });
+        const data = response.data.data;
+        setName(data.name || "");
+        setEmail(data.email || "");
+        setPhone(data.phone || "");
+        setDob(data.dob ? data.dob.slice(0, 10) : "");
+        setGender(data.gender || "");
+        setAddress(data.address || "");
+        setAvatar(data.avatar || "");
+        setRole(data.role || 2);
+      } catch (error) {
+        console.error("Lỗi khi gọi API user/now:", error);
+        router.push("/404");
+      }
+    }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const nameCharRegex = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/;
+    // const userNameCharRegex = /^[a-zA-Z0-9\u00C0-\u1EF9]+$/;
+    const addressCharRegex = /^[a-zA-Z0-9\s,\u00C0-\u1EF9]+$/;
+    const phoneRegex = /^\d{10}$/;
 
-    const data = new FormData()
-    Object.entries(formData).forEach((tit, val) => data.append(tit, val))
-    if (file)
-      data.append('avatar', file)
-
-    await axiosConfig.post('user/profile',
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        }
+    let errors = [];
+    if (name && !nameCharRegex.test(name)) {
+        errors.push("Name must not contain special characters.");
       }
-    ).catch((e) => {
-      console.log(e);
-    })
-  };
-
-
-  useEffect(() => {
-    async function fetch() {
-      const id = user.id
-      await axiosConfig.get(`/users/${id}`).then((res) => {
-        setFormData((prev) => ({
-          ...prev,
-          ...res.data.data
-        }));
-      })
+      // if (username && !userNameCharRegex.test(username)) {
+      //   errors.push("Username must not contain spaces or special characters.");
+      // }
+      if (address && !addressCharRegex.test(address)) {
+        errors.push("Address must not contain special characters (except comma).");
+      }
+      if (phone && !phoneRegex.test(phone)) {
+        errors.push("Phone number must contain exactly 10 digits.");
+      }
+  
+      if (errors.length > 0) {
+        alert(errors.join("\n"));
+        return;
+      }
+    try {
+        const formData = new FormData();
+        // formData.append("username", username);
+        formData.append("name", name);
+        formData.append("phone", phone);
+        formData.append("dob", dob);
+        formData.append("address", address);
+        formData.append("gender", gender);
+      const response = await axiosConfig.post("/user/profile",formData, {
+        withCredentials: true,
+        headers: {
+            "Content-Type": "multipart/form-data",
+          },
+      });
+      alert("Cập nhật thành công!");
+    } catch (error) {
+      console.error("Lỗi cập nhật thông tin:", error);
+      alert("Cập nhật thất bại!");
     }
-    fetch()
-  }, [])
-
+  };
 
   return (
     <div className="page-heading px-4 py-8">
@@ -67,98 +93,101 @@ export default function ProfilePage() {
         <div className="row">
           <div className="col-12 col-md-6 order-md-1 order-last">
             <h3>Account Profile</h3>
-            <p className="text-subtitle text-muted">A page where users can change profile information</p>
+            <p className="text-subtitle text-muted">
+              A page where users can change profile information
+            </p>
           </div>
         </div>
       </div>
+
       <section className="section">
         <div className="row">
           <div className="col-12 col-lg-4">
             <div className="card">
-              <div className="card-body">
-                <div className="d-flex justify-content-center align-items-center flex-column">
-                  <UploadFileAvatar avatar={formData.avatar} setFile={setFile} />
-
-                  <h3 className="mt-3">{formData.name}</h3>
-                  <p className="text-small">{formData.role == 1 ? "Người dùng" : "Người quản trị"}</p>
-                </div>
+              <div className="card-body d-flex justify-content-center align-items-center flex-column">
+                <UploadFileAvatar avatar={avatar} />
+                <h3 className="mt-3">{name}</h3>
+                <p className="text-small">
+                  {role === 1 ? 'Quản trị viên' : role === 2 ? 'Người dùng' : 'Chưa xác định'}
+                </p>
               </div>
             </div>
           </div>
+
           <div className="col-12 col-lg-8">
             <div className="card">
               <div className="card-body">
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
-                    <label htmlFor="name" className="form-label">Name</label>
+                    <label htmlFor="name">Name</label>
                     <input
                       type="text"
-                      autoComplete="off"
-                      name="name"
                       id="name"
                       className="form-control"
-                      placeholder="Your Name"
-                      value={formData.name}
-                      onChange={handleChange}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="email" className="form-label">Email</label>
+                    <label htmlFor="email">Email</label>
                     <input
-                      type="text"
-                      autoComplete="off"
-                      name="email"
+                      type="email"
                       id="email"
                       className="form-control"
-                      placeholder="Your Email"
-                      value={formData.email}
-                      onChange={handleChange}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="phone" className="form-label">Phone</label>
-                    <input
-                      type="number"
-                      autoComplete="off"
-                      name="phone"
-                      id="phone"
-                      className="form-control"
-                      placeholder="Your Phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="birthday" className="form-label">Birthday</label>
-                    <input
-                      type="date"
-                      autoComplete="off"
-                      name="dob"
-                      id="birthday"
-                      className="form-control"
-                      value={formData.dob}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="address" className="form-label">Address</label>
+                    <label htmlFor="phone">Phone</label>
                     <input
                       type="text"
-                      autoComplete="off"
-                      name="address"
-                      id="address"
+                      id="phone"
                       className="form-control"
-                      placeholder="Your Address"
-                      value={formData.address}
-                      onChange={handleChange}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
 
-                  <div className="form-group justify-self-center">
+                  <div className="form-group">
+                    <label htmlFor="dob">Birthday</label>
+                    <input
+                      type="date"
+                      id="dob"
+                      className="form-control"
+                      value={dob}
+                      onChange={(e) => setDob(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="gender">Gender</label>
+                    <select
+                      id="gender"
+                      className="form-control"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                    >
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="address">Address</label>
+                    <input
+                      type="text"
+                      id="address"
+                      className="form-control"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-group mt-4">
                     <button type="submit" className="btn btn-primary">
                       Save Changes
                     </button>

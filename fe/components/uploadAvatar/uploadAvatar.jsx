@@ -1,9 +1,8 @@
+import { useState } from "react";
 import axiosConfig from "@/axiosConfig";
-import { useEffect, useState } from "react";
 
-const HOST = process.env.NEXT_PUBLIC_BASE_BE_URL
-
-export default function UploadFileAvatar({avatar, setFile}) {
+export default function UploadFileAvatar({ avatar }) {
+    const [selectedFile, setSelectedFile] = useState(null);
     const [logoPreview, setLogoPreview] = useState(null);
 
     const handleFileChange = (e) => {
@@ -13,7 +12,6 @@ export default function UploadFileAvatar({avatar, setFile}) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setLogoPreview(reader.result);
-                setFile(file)
             };
             reader.readAsDataURL(file);
         }
@@ -41,28 +39,38 @@ export default function UploadFileAvatar({avatar, setFile}) {
     };
 
     return (
-        <div className="group hover:bg-gray-500 hover:opacity-50 transition-all duration-300 border border-gray-300 flex-1 absolute w-32 h-32 rounded-full relative overflow-hidden">
-            <img
-                src={logoPreview || HOST + avatar}
-                alt="Avatar"
-                className="max-w-full max-h-full object-contain"
-                onError={(e) => {
-                    e.target.src = '/avatar.png';
-                }}
-            />
-            <input
-                type="file"
-                id="logo-upload"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="hidden"
-            />
-            <label
-                htmlFor="logo-upload"
-                className="group opacity-0 hover:opacity-100 transition-all duration-300 hidden group-hover:inline-block text-sm font-medium text-gray-700 cursor-pointer absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
-            >
-                Chọn ảnh
-            </label>
+        <div className="flex flex-col items-center space-y-2 relative">
+            <div className="group hover:bg-gray-500 hover:opacity-50 transition-all duration-300 border border-gray-300 w-32 h-32 rounded-full relative overflow-hidden">
+                <img
+                    src={logoPreview || avatar || "avatar.png"}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                    onError={(e) => (e.target.src = "avatar.png")}
+                />
+                <input
+                    type="file"
+                    id="logo-upload"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                />
+                <label
+                    htmlFor="logo-upload"
+                    className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white bg-black bg-opacity-40 opacity-0 hover:opacity-100 cursor-pointer"
+                >
+                    Chọn ảnh
+                </label>
+            </div>
+
+            {/* Nút xác nhận chỉ hiện khi đã chọn file */}
+            {selectedFile && (
+                <button
+                    onClick={handleUploadConfirm}
+                    className="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                >
+                    Save Change
+                </button>
+            )}
         </div>
     );
 }

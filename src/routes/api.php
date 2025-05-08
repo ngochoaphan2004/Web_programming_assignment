@@ -63,6 +63,9 @@ switch (true) {
     case $uri === 'user/logout' && $requestMethod === 'POST':
         $userController->logout();
         break;
+    case $uri === 'user/change-password' && $requestMethod === 'POST':
+        $userController->changePassword();
+        break;
     case preg_match('/^user\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
         $userController->deleteUser($matches[1]);
         break;
@@ -96,6 +99,9 @@ switch (true) {
         $contactController->answerContact();
     case $uri === 'user/edit-profile' && $requestMethod === 'POST':
         $userController->editProfile();
+        break;
+    case $uri === 'user/avatar' && $requestMethod === 'POST':
+        $userController->changeAvatar();
         break;
     case $uri === 'contacts' && $requestMethod === 'PUT':
         $contactController->changeStatus();
