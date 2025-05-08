@@ -360,9 +360,7 @@ export default function CartPage() {
                 <input type="radio" name="pay" value="bank"
                        checked={payMethod==="bank"}
                        onChange={()=>setPayMethod("bank")} />
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEFaf0MFHgrZ5wv6tTuXgoynaqldmnROJuIg&s"
-                  className="h-8 w-auto" />
+                <img src={`${HOST}/src/public/uploads/Bank.jpg`} className="h-8 w-auto" />
                 <span className="text-sm">Ngân hàng</span>
               </label>
 
@@ -371,9 +369,7 @@ export default function CartPage() {
                 <input type="radio" name="pay" value="momo"
                        checked={payMethod==="momo"}
                        onChange={()=>setPayMethod("momo")} />
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCbN3sfa0iwFLjfa9h3osHIiMig0UxgXs_hw&s"  // ← giữ full chuỗi của bạn
-                  className="h-8 w-auto" />
+                <img src={`${HOST}/src/public/uploads/Momo.jpg`} className="h-8 w-auto" />
                 <span className="text-sm">Momo</span>
               </label>
 
@@ -382,10 +378,8 @@ export default function CartPage() {
                 <input type="radio" name="pay" value="cod"
                        checked={payMethod==="cod"}
                        onChange={()=>setPayMethod("cod")} />
-                <img
-                  src="https://i.pinimg.com/564x/5d/8b/85/5d8b85728f347ea9f02f0aa17fe06d5e.jpg" // ← giữ full
-                  className="h-8 w-auto" />
-                <span className="text-sm">Ship COD</span>
+                <img src={`${HOST}/src/public/uploads/COD.jpg`} className="h-8 w-auto" />
+                <span className="text-sm">Ship COD</span>
               </label>
             </div>
 
