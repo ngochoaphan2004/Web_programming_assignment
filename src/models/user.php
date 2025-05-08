@@ -24,20 +24,17 @@ class User
         $stmt = $this->db->prepare("INSERT INTO users (name, email,password) VALUES (:name, :email,:password)");
         return $stmt->execute(["name" => $name, "email" => $email, "password => $password"]);
     }
-    public function createUserWithPassword($name, $email, $password, $username, $avatar, $dob, $phone, $address)
-    {
-        $stmt = $this->db->prepare("INSERT INTO users (name, email, password, username, avatar, dob, phone, address) 
-        VALUES (:name, :email, :password, :username, :avatar, :dob, :phone, :address)");
-        return $stmt->execute([
-            ':name' => $name,
-            ':email' => $email,
-            ':password' => $password,
-            ':username' => $username,
-            'avatar' => $avatar,
-            'dob' => $dob,
-            'phone' => $phone,
-            'address' => $address
-        ]);
+    public function createUserWithPassword($name, $email, $password, $avatar, $dob, $phone, $address, $gender) {
+        $stmt = $this->db->prepare("INSERT INTO users (name, email, password, avatar, dob, phone, address, gender) 
+        VALUES (:name, :email, :password, :avatar, :dob, :phone, :address, :gender)");
+        return $stmt->execute([':name' => $name,
+        ':email' => $email,
+        ':password' => $password,
+        'avatar' => $avatar,
+        'dob' => $dob,
+        'phone' => $phone,
+        'address' => $address,
+        'gender' => $gender]);
     }
 
 
@@ -57,7 +54,11 @@ class User
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $baseURL = $_ENV['BASE_URL'];
+        $user['avatar'] = $baseURL . $user['avatar'];
+        return $user;
+
     }
     public function login($email, $password)
     {
@@ -73,16 +74,15 @@ class User
         return $user;
     }
 
-    public function updateProfile($id, $name, $username, $dob, $phone, $address)
-    {
-        $stmt = $this->db->prepare("UPDATE users SET name = :name, username = :username, dob = :dob, phone = :phone, address = :address WHERE id = :id");
+    public function updateProfile($id,$name, $dob, $phone, $address, $gender) {
+        $stmt = $this->db->prepare("UPDATE users SET name = :name, dob = :dob, phone = :phone, address = :address, gender = :gender WHERE id = :id");
         return $stmt->execute([
             ':id' => $id,
             ':name' => $name,
-            ':username' => $username,
             ':dob' => $dob,
             ':phone' => $phone,
-            ':address' => $address
+            ':address' => $address,
+            ':gender' => $gender
         ]);
     }
 

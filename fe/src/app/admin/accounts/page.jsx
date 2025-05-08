@@ -102,7 +102,6 @@ export default function AccountPage() {
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">#</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">Tên</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider min-w-[130px]">User name</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">Email</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider min-w-[130px]">Loại tài khoản</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">Ngày tạo</th>
@@ -121,7 +120,6 @@ export default function AccountPage() {
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{account.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{account.username}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{account.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`flex justify-center min-w-[85px] w-full px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${roleClass.text} ${roleClass.bg.replace('50', '100')} transition-colors duration-200`}>

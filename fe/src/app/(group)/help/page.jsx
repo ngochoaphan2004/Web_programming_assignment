@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import axiosConfig from '../../../axiosConfig';
 import { AnimatePresence, motion } from "motion/react"
-
+import { useRouter } from 'next/navigation';
 const HelpPage = () => {
+    const router = useRouter();
     const [isOpenBH, setIsOpenBH] = useState(false);
     const [isOpenBH1, setIsOpenBH1] = useState(false);
     const [isOpenBH2, setIsOpenBH2] = useState(false);
@@ -364,7 +365,14 @@ const HelpPage = () => {
 
                 <div className="border-t border-gray-300 mb-4"></div>
             </div>
-
+            <div className="text-center">
+            <button
+                onClick={() => router.push('/hoidap')}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md mt-4 hover:bg-blue-700"
+            >
+                Xem thêm
+            </button>
+      </div>
             {/* Liên hệ */}
             <div>
                 <h3 className="font-bold mb-1">Liên hệ chúng tôi</h3>
@@ -384,41 +392,46 @@ const HelpPage = () => {
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200">
-                            {requests.map((request) => (
-                                <div
-                                    key={request.id}
-                                    className="px-3 py-1 md:p-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
-                                >
-                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1">
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm sm:text-md font-medium text-gray-800 truncate mb-1">
-                                                {request.name}
-                                            </p>
-                                            <p className="text-xs sm:text-sm text-gray-500  mb-1">
-                                                {formatDate(request.created_at)}
-                                            </p>
-                                        </div>
+                            {Array.isArray(requests) && requests.length > 0 ? (
+                                requests.map((request) => (
+                                    <div
+                                        key={request.id}
+                                        className="px-3 py-1 md:p-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                                    >
+                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm sm:text-md font-medium text-gray-800 truncate mb-1">
+                                                    {request.name}
+                                                </p>
+                                                <p className="text-xs sm:text-sm text-gray-500  mb-1">
+                                                    {formatDate(request.created_at)}
+                                                </p>
+                                            </div>
 
-                                        <div className="flex flex-row-reverse sm:flex-row justify-between sm:justify-normal items-center sm:ml-4 gap-2 sm:gap-3">
-                                            <button
-                                                onClick={() => setSelectedRequest(request)}
-                                                className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium whitespace-nowrap"
-                                            >
-                                                Xem chi tiết
-                                            </button>
+                                            <div className="flex flex-row-reverse sm:flex-row justify-between sm:justify-normal items-center sm:ml-4 gap-2 sm:gap-3">
+                                                <button
+                                                    onClick={() => setSelectedRequest(request)}
+                                                    className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium whitespace-nowrap"
+                                                >
+                                                    Xem chi tiết
+                                                </button>
 
-                                            <span
-                                                className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs font-medium ${request.status === 'answered'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                                <span
+                                                    className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-xs font-medium ${
+                                                        request.status === 'answered'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-yellow-100 text-yellow-800'
                                                     }`}
-                                            >
-                                                {request.status === 'answered' ? 'Đã trả lời' : 'Chờ xử lý'}
-                                            </span>
+                                                >
+                                                    {request.status === 'answered' ? 'Đã trả lời' : 'Chờ xử lý'}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="text-sm text-gray-500 px-4 py-2">Không có yêu cầu nào.</p>
+                            )}
                         </div>
                     ))}
 

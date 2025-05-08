@@ -217,7 +217,7 @@ class ProductController {
     public function getProductsByCategory($category) {
         $productModel = new Product();
         $products = $productModel->getProductsByCategory($category);
-        echo json_encode(["success" => true, "data" => $products]);
+        echo json_encode(["success" => true, "data" => $products, "key"=> $category]);
     }
     
     public function search() {
@@ -237,14 +237,38 @@ class ProductController {
     
 
     // Lấy sản phẩm theo danh mục với phân trang
-    public function getProductsByCategoryPaginated($category) {
-        $limit  = $_GET['limit']  ?? 5;
-        $page   = $_GET['page']   ?? 1;
-        $offset = ($page - 1) * $limit;
+    // public function getProductsByCategoryPaginated($category) {
+    //     $limit  = $_GET['limit']  ?? 5;
+    //     $page   = $_GET['page']   ?? 1;
+    //     $offset = ($page - 1) * $limit;
     
+    //     $productModel = new Product();
+    //     $products = $productModel->getProductsByCategoryWithLimit($category, $limit, $offset);
+    //     echo json_encode(["success" => true, "data" => $products]);
+    // }
+    public function getProductsByCategoryPaginated($category) {
+        $limit = intval($_GET['limit'] ?? 5);
+        $page = intval($_GET['page'] ?? 1);
+        $offset = ($page - 1) * $limit;
+
         $productModel = new Product();
         $products = $productModel->getProductsByCategoryWithLimit($category, $limit, $offset);
-        echo json_encode(["success" => true, "data" => $products]);
+        $total = $productModel->countProductsByCategory($category);
+        $lastPage = ceil($total / $limit);
+
+        $meta = [
+            'current_page' => $page,
+            'last_page' => $lastPage,
+            'total' => $total,
+            'limit' => $limit
+        ];
+
+        echo json_encode([
+            "success" => true,
+            "data" => $products,
+            "meta" => $meta,
+            "key" => $category
+        ], JSON_PRETTY_PRINT);
     }
     
     // Lấy toàn bộ sản phẩm – lần này không phân trang

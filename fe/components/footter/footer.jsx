@@ -32,6 +32,7 @@ export default function Footter() {
         }
         fetchData()
     }, [])
+    const address = Array.isArray(companyInfo?.address) ? companyInfo.address : [];
     return (
         <>
             <footer>
@@ -40,8 +41,11 @@ export default function Footter() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div>
                                 <p className="font-bold mb-2">Về chúng tôi</p>
+                                <p>Địa chỉ 1: {address[0]?.address || ' '}</p>
+                                <p>Địa chỉ 2: {address[1]?.address || ' '}</p>
+                                {/* 
                                 <p>Địa chỉ 1: {companyInfo.address[0]?.address || ' '}</p>
-                                <p>Địa chỉ 2: {companyInfo.address[1]?.address || ' '}</p>
+                                <p>Địa chỉ 2: {companyInfo.address[1]?.address || ' '}</p> */}
                                 <p>Email: {companyInfo.email || ' '}</p>
                             </div>
                             <div>

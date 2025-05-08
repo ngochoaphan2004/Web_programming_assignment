@@ -5,11 +5,10 @@ require_once '../controllers/products.php';
 require_once '../controllers/CartController.php';
 require_once '../controllers/OrderController.php';
 require_once '../controllers/shop.php';
+require_once '../controllers/banner.php';
+require_once '../controllers/intro.php';
+require_once '../controllers/question.php';
 
-// Cho phép các phương thức và header phù hợp
-// $basePath = '/BTL_LTW/src/public'; 
-// $basePath = '/api';
-// $uri = str_replace($basePath, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $basePath = dirname($_SERVER['SCRIPT_NAME']);
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
 $basePath = rtrim(dirname($scriptName), '/');
@@ -21,10 +20,13 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $userController = new UserController();
 $contactController = new ContactController();
 $productController = new ProductController();
+
 $cartController = new CartController();
 $orderController = new OrderController();
 $shopController = new ShopController();
-
+$bannerController = new BannerController();
+$introController = new IntroController();
+$questionController = new QuestionController();
 
 if ($requestMethod == 'OPTIONS') {
     header("HTTP/1.1 204 No Content");
@@ -36,7 +38,9 @@ switch (true) {
     case $uri === 'user/login' && $requestMethod === 'POST':
         $userController->login();
         break;
-
+    case $uri === 'user/now'  && $requestMethod === 'GET':
+        $userController->getUser();
+        break;
     case $uri === 'user/register' && $requestMethod === 'POST':
         $userController->register();
         break;
@@ -126,14 +130,15 @@ switch (true) {
     case preg_match('/^products\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
         $productController->deleteProduct($matches[1]);
         break;
-    // Lấy sản phẩm theo danh mục
-    case preg_match('/^products\/category\/(.+)$/', $uri, $matches) && $requestMethod === 'GET':
-        $productController->getProductsByCategory($matches[1]);
-        break;
     // Lấy sản phẩm theo danh mục với phân trang
     case preg_match('/^products\/category\/(.+)\/paginate$/', $uri, $matches) && $requestMethod === 'GET':
         $productController->getProductsByCategoryPaginated($matches[1]);
         break;
+    // Lấy sản phẩm theo danh mục
+    case preg_match('/^products\/category\/(.+)$/', $uri, $matches) && $requestMethod === 'GET':
+        $productController->getProductsByCategory($matches[1]);
+        break;
+    
     // Lấy toàn bộ sản phẩm – lần này không phân trang   
     case $uri === 'products/grouped' && $requestMethod === 'GET':
         $productController->getAllProductsGrouped();
@@ -143,6 +148,21 @@ switch (true) {
     case $uri === 'cart' && $requestMethod === 'GET':
         $cartController->getCart();
         break;
+    
+    // BANNER
+    case $uri === 'banner' && $requestMethod === 'GET':
+        $bannerController->getBanner();
+        break;
+    case $uri === 'banner' && $requestMethod === 'POST':
+        $bannerController->uploadBanner();
+        break;
+    case $uri === 'banner/update' && $requestMethod === 'POST':
+        $bannerController->editBanner();
+        break;
+    case $uri === 'banner' && $requestMethod === 'DELETE':
+        $bannerController->deleteBanner();
+        break;
+
 
     /* thêm sp vào giỏ */
     case $uri === 'cart/add' && $requestMethod === 'POST':
@@ -163,7 +183,7 @@ switch (true) {
     case $uri === 'products/search' && $requestMethod === 'GET':
         $productController->search();
         break;
-    
+
     /* ============ ADMIN ============ */
     case $uri === 'orders' && $requestMethod === 'GET':
         $orderController->index();            // danh sách
@@ -201,10 +221,76 @@ switch (true) {
     case $uri === 'user/orders' && $requestMethod === 'GET':
         $orderController->getUserOrders();
         break;
-        
+    // INTRO
+    case $uri === 'introduce' && $requestMethod === 'GET':
+        $introController->getIntroduceData();
+        break;
+    // Add new content
+    case $uri === 'introduce' && $requestMethod === 'POST':
+        // case $uri === 'introduce/commitment' && $requestMethod === 'POST':
+        // case $uri === 'introduce/thank' && $requestMethod === 'POST':
+        //     $section = $matches[1];
+            $introController->addContent();
+            break;
+    
+        // Update content
+        case preg_match('#^introduce/(intro|commitment|thank)/(\d+)$#', $uri, $matches) && $requestMethod === 'PUT':
+            $section = $matches[1];
+            $order_index = $matches[2];
+            $introController->updateContent($section, $order_index);
+            break;
+    
+        // Delete content
+        case preg_match('#^introduce/(intro|commitment|thank)/(\d+)$#', $uri, $matches) && $requestMethod === 'DELETE':
+            $section = $matches[1];
+            $order_index = $matches[2];
+            $introController->deleteContent($section, $order_index);
+            break;
+    
+
+    // QUESTION
+    case $uri === 'question' && $requestMethod === 'GET':
+        $questionController->getQuestion();
+        break;
+    case $uri === 'question/create' && $requestMethod === 'POST':
+        $questionController->createQuestion();
+        break;
+    case $uri === 'answer/create' && $requestMethod === 'POST':
+        $questionController->createAnswer();
+        break;
+    // Lấy câu hỏi của người dùng
+    case $uri === 'user/questions' && $requestMethod === 'GET':
+        $questionController->getUserQuestions();
+        break;
+
+    // Lấy câu trả lời của người dùng
+    case $uri === 'user/answers' && $requestMethod === 'GET':
+        $questionController->getUserAnswers();
+        break;
+
+    // Cập nhật câu hỏi
+    case preg_match('/^question\/(\d+)$/', $uri, $matches) && $requestMethod === 'PUT':
+        $questionController->updateQuestion();
+        break;
+
+    // Xóa câu hỏi
+    case preg_match('/^question\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
+        $questionController->deleteQuestion();
+        break;
+
+    // Cập nhật câu trả lời
+    case preg_match('/^answer\/(\d+)$/', $uri, $matches) && $requestMethod === 'PUT':
+        $questionController->updateAnswer();
+        break;
+
+    // Xóa câu trả lời
+    case preg_match('/^answer\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
+        $questionController->deleteAnswer();
+        break;
     // DEFAULT
     default:
         http_response_code(404);
         echo json_encode(["success" => false, "message" => "Route không tồn tại " . $uri]);
         break;
 }
+
