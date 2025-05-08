@@ -22,7 +22,8 @@ class AuthService {
                     "name" => $_SESSION['name'],
                     "email" => $_SESSION['email'],
                     "role" => $_SESSION['role'],
-                    "avatar" => $user['avatar']
+                    "avatar" => $user['avatar'],
+                    "phone" => $user['phone']
                 ],
                 "logo" => $shopInfo['logo']
             ];

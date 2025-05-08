@@ -18,7 +18,7 @@ const HelpPage = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
+        phone: 0,
         message: ''
     });
 
@@ -43,34 +43,40 @@ const HelpPage = () => {
 
     const validate = () => {
         const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = 'Vui lòng nhập họ tên';
-        if (!formData.email.trim()) {
+    
+        if (!formData.name?.trim()) newErrors.name = 'Vui lòng nhập họ tên';
+    
+        if (!formData.email?.trim()) {
             newErrors.email = 'Vui lòng nhập email';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Email không hợp lệ';
         }
-        if (!formData.phone.trim()) {
+    
+        if (!formData.phone?.trim()) {
             newErrors.phone = 'Vui lòng nhập số điện thoại';
         } else if (!/^(0|\+84)[0-9]{9,10}$/.test(formData.phone)) {
             newErrors.phone = 'Số điện thoại không hợp lệ';
         }
-        if (!formData.message.trim()) newErrors.message = 'Vui lòng nhập nội dung';
-
+    
+        if (!formData.message?.trim()) newErrors.message = 'Vui lòng nhập nội dung';
+    
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+    
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
             setIsSubmitting(true);
-            // Simulate API call
-            setTimeout(() => {
-                console.log('Form submitted:', formData);
+
+            await axiosConfig.post("contacts",formData)
+            .then((res)=>{
                 setIsSubmitting(false);
                 setSubmitSuccess(true);
-                setFormData({ name: '', email: '', phone: '', message: '' });
-            }, 1500);
+                setFormData(prev => { return { ...prev, message: '' }});
+            })
+            
         }
     };
 
@@ -94,11 +100,12 @@ const HelpPage = () => {
             })
 
             if (res.data.authenticated) {
+                console.log(res.data);
                 setIsAuth(true)
                 setFormData({
-                    name: res.data.user.name,
+                    name: "",
                     email: res.data.user.email,
-                    phone: '',
+                    phone: res.data.user.phone,
                     message: ''
                 });
                 axiosConfig.get('/contacts', { email: res.data.user.email }).then((res) => {
@@ -366,12 +373,12 @@ const HelpPage = () => {
                 <div className="border-t border-gray-300 mb-4"></div>
             </div>
             <div className="text-center">
-                <button
-                    onClick={() => router.push('/hoidap')}
+                <a
+                    href='/hoidap'
                     className="px-4 py-2 bg-blue-600 text-white rounded-md mt-4 hover:bg-blue-700"
                 >
                     Xem thêm
-                </button>
+                </a>
             </div>
             {/* Liên hệ */}
             <div>
@@ -518,7 +525,8 @@ const HelpPage = () => {
                         </div>
                     )}
                 </div>
-                {isAuth ?? (
+
+                {isAuth && (
                     <div className="space-y-3">
                         <div>
                             {/* Thông báo thành công */}
@@ -535,31 +543,6 @@ const HelpPage = () => {
                             )}
 
                             <form onSubmit={handleSubmit} className="space-y-5">
-                                {/* Name Field */}
-                                <div className="space-y-1.5">
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                        Họ và tên <span className="text-rose-500">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className={`block w-full px-4 py-2.5 rounded-lg border ${errors.name ? 'border-rose-300 focus:ring-2 focus:ring-rose-200 focus:border-rose-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500'} placeholder-gray-400 transition-colors`}
-                                            placeholder="Nguyễn Văn A"
-                                        />
-                                        {errors.name && (
-                                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                                <svg className="h-5 w-5 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {errors.name && <p className="text-sm text-rose-600">{errors.name}</p>}
-                                </div>
 
                                 {/* Email Field */}
                                 <div className="space-y-1.5">
@@ -571,6 +554,7 @@ const HelpPage = () => {
                                             type="email"
                                             id="email"
                                             name="email"
+                                            autoComplete='off'
                                             value={formData.email}
                                             onChange={handleChange}
                                             className={`block w-full px-4 py-2.5 rounded-lg border ${errors.email ? 'border-rose-300 focus:ring-2 focus:ring-rose-200 focus:border-rose-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500'} placeholder-gray-400 transition-colors`}
@@ -597,10 +581,10 @@ const HelpPage = () => {
                                             type="tel"
                                             id="phone"
                                             name="phone"
+                                            autoComplete='off'
                                             value={formData.phone}
                                             onChange={handleChange}
                                             className={`block w-full px-4 py-2.5 rounded-lg border ${errors.phone ? 'border-rose-300 focus:ring-2 focus:ring-rose-200 focus:border-rose-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500'} placeholder-gray-400 transition-colors`}
-                                            placeholder="0987 654 321"
                                         />
                                         {errors.phone && (
                                             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -613,6 +597,31 @@ const HelpPage = () => {
                                     {errors.phone && <p className="text-sm text-rose-600">{errors.phone}</p>}
                                 </div>
 
+                                {/* Name Field */}
+                                <div className="space-y-1.5">
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                        Tiêu đề <span className="text-rose-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            autoComplete='off'
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className={`block w-full px-4 py-2.5 rounded-lg border ${errors.name ? 'border-rose-300 focus:ring-2 focus:ring-rose-200 focus:border-rose-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500'} placeholder-gray-400 transition-colors`}
+                                        />
+                                        {errors.name && (
+                                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                <svg className="h-5 w-5 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {errors.name && <p className="text-sm text-rose-600">{errors.name}</p>}
+                                </div>
                                 {/* Message Field */}
                                 <div className="space-y-1.5">
                                     <label htmlFor="message" className="block text-sm font-medium text-gray-700">
@@ -622,6 +631,7 @@ const HelpPage = () => {
                                         id="message"
                                         name="message"
                                         rows={4}
+                                        autoComplete='off'
                                         value={formData.message}
                                         onChange={handleChange}
                                         className={`block w-full px-4 py-2.5 rounded-lg border ${errors.message ? 'border-rose-300 focus:ring-2 focus:ring-rose-200 focus:border-rose-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500'} placeholder-gray-400 transition-colors`}
