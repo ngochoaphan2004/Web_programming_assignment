@@ -55,8 +55,7 @@ class User
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        $baseURL = $_ENV['BASE_URL'];
-        $user['avatar'] = $baseURL . $user['avatar'];
+        $user['avatar'] = $user['avatar'];
         return $user;
 
     }

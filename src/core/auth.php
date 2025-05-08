@@ -6,13 +6,13 @@ class AuthService {
 
     public function checkSession() {
         session_start();
+        $shop = new Shop();
+        $shopInfo = $shop->getShopInfo();
 
         if (isset($_SESSION['user_id'])) {
 
             $userAcc = new User();
             $user = $userAcc->getUserById($_SESSION['user_id']);
-            $shop = new Shop();
-            $shopInfo = $shop->getShopInfo();
             
             return [
                 "authenticated" => true,
@@ -29,7 +29,8 @@ class AuthService {
         } else {
             return [
                 "authenticated" => false,
-                "admin" => false
+                "admin" => false,
+                "logo" => $shopInfo['logo']
             ];
         }
     }

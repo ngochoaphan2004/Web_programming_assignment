@@ -27,10 +27,12 @@ export default function ProfilePage() {
   };
 
   const handleSubmit = async (e) => {
+    console.log(formData);
+    
     e.preventDefault();
 
     const data = new FormData()
-    Object.entries(formData).forEach((tit, val) => data.append(tit, val))
+    Object.entries(formData).forEach(([tit, val]) => data.append(tit, val))
     if (file)
       data.append('avatar', file)
 
@@ -41,8 +43,8 @@ export default function ProfilePage() {
           "Content-Type": "multipart/form-data",
         }
       }
-    ).catch((e) => {
-      console.log(e);
+    ).then((res) => {
+      console.log(res);
     })
   };
 
