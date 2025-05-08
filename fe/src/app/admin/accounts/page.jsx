@@ -1,6 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from "motion/react";
 import axiosConfig from '../../../axiosConfig';
+import ConfirmCustom from '../../../../components/comfirm/comfirm';
 import '../css.css'
 export default function AccountPage() {
   const [sourceList, setSourceList] = useState([]);
@@ -10,6 +12,8 @@ export default function AccountPage() {
   const [expandedRows, setExpandedRows] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isHelper, setIsHelper] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const reload = async () => {
     await axiosConfig.get('users').then((res) => {
@@ -22,10 +26,6 @@ export default function AccountPage() {
     });
   }
 
-  useEffect(() => {
-    reload()
-    setIsLoading(false)
-  }, []);
 
   const toggleRow = (account) => {
     if (expandedRows == null) {
@@ -46,10 +46,6 @@ export default function AccountPage() {
     }
   }
 
-  useEffect(() => {
-    sortList()
-  }, [sortOption])
-
   const getRoleClass = (status) => {
     switch (status) {
       case 1:
@@ -60,6 +56,29 @@ export default function AccountPage() {
         return { bg: "bg-red-50", border: "border-red-400", text: "text-red-700" };
     }
   };
+
+  async function deleteUser(id) {
+    await axiosConfig.delete(`user/${id}`)
+      .then((res) => {
+        if (res.data && res.data.success == true) {
+          setAccounts(prev => prev.filter((a) => a.id != id));
+          setExpandedRows(null)
+          setShowSuccess(true)
+        }
+      }).catch((err) => {
+        setShowError(true)
+        console.error('Error:', err);
+      });
+  };
+
+  useEffect(() => {
+    reload()
+    setIsLoading(false)
+  }, []);
+
+  useEffect(() => {
+    sortList()
+  }, [sortOption])
 
   return (
     <div className="container mx-auto p-4">
@@ -134,12 +153,12 @@ export default function AccountPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
                           <button
                             onClick={async () => {
-                              toggleRow(account)
+                              setExpandedRows(account)
                             }}
                             className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-200"
                           >Xem</button>
                           <button
-                            onClick={() => deleteFeedback(account.id)}
+                            onClick={() => deleteUser(account.id)}
                             className={`text-red-600 hover:text-red-900 transition-colors duration-200 ${isAnimating ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={isAnimating}
                           >
@@ -172,7 +191,7 @@ export default function AccountPage() {
                           <div className="grid grid-cols-2 gap-2 sm:gap-4 text-sm">
                             <div>
                               <p className="font-medium text-gray-500">Tên</p>
-                              <p className="text-gray-800 truncate">{expandedRows.username}</p>
+                              <p className="text-gray-800 truncate">{expandedRows.name}</p>
                             </div>
                             <div>
                               <p className="font-medium text-gray-500">Email</p>
@@ -197,7 +216,7 @@ export default function AccountPage() {
                       <div className="mt-6 flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-0">
                         <div className="flex justify-center sm:justify-start">
                           <button
-                            onClick={() => { }}
+                            onClick={() => deleteUser(expandedRows.id)}
                             className={`px-3 sm:px-4 py-2 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 w-full sm:w-auto transition-colors duration-200 ${isAnimating ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={isAnimating}
                           >
@@ -229,6 +248,13 @@ export default function AccountPage() {
           )}
         </>
       )}
+
+      <AnimatePresence mode='wait'>
+        {showSuccess && (<ConfirmCustom isSuccessful handleCancelConfirm={() => setShowSuccess(false)} />)}
+      </AnimatePresence>
+      <AnimatePresence mode='wait'>
+        {showError && (<ConfirmCustom isError handleCancelConfirm={() => setShowError(false)} />)}
+      </AnimatePresence>
     </div>
   );
 }

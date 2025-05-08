@@ -10,7 +10,7 @@ class UserController
         $users = $userModel->getAllUsers();
         echo json_encode(["success" => true, "data" => $users], JSON_PRETTY_PRINT);
     }
- 
+
     public function getUsersByID($id)
     {
         $userModel = new User();
@@ -37,7 +37,7 @@ class UserController
         $dob = trim($_POST['dob'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $address = trim($_POST['address'] ?? '');
-        $gender =trim($_POST['gender'] ?? '');
+        $gender = trim($_POST['gender'] ?? '');
         if (empty($name) || empty($email) || empty($password) || empty($dob) || empty($phone) || empty($address) || empty($gender)) {
             echo json_encode(["success" => false, "message" => "Invalid data"]);
             return;
@@ -159,7 +159,7 @@ class UserController
                 return;
             }
 
-            $path = '../..'.$avaPath;
+            $path = '../..' . $avaPath;
             if (!empty($avaPath) && file_exists($path)) {
                 unlink($path);
             }
@@ -240,20 +240,20 @@ class UserController
             $fileName = uniqid() . '-' . basename($file['name']);
             $targetPath = $uploadDir . $fileName; // đường vật lý
             $avatarPath = 'public/uploads/' . $fileName;
-    
+
             // Check valid file format
             $allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
             if (!in_array($file['type'], $allowedTypes)) {
                 echo json_encode(['success' => false, 'message' => 'Only PNG, JPG images are allowed']);
                 return;
             }
-    
+
             // Check file size (max 5MB)
             if ($file['size'] > 5 * 1024 * 1024) {
                 echo json_encode(['success' => false, 'message' => 'File too large, max 5MB']);
                 return;
             }
-            
+
             // Save file
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                 $avatarPath = $targetPath;
@@ -261,8 +261,7 @@ class UserController
                 echo json_encode(['success' => false, 'message' => 'Error saving file']);
                 return;
             }
-        }
-        else {
+        } else {
             echo json_encode(["success" => false, "message" => "Avatar update failed", 'avatar' => isset($_FILES['avatar'])]);
             return;
         }
@@ -275,7 +274,7 @@ class UserController
             echo json_encode(["success" => false, "message" => "Avatar update failed"]);
         }
     }
-    
+
 
     public function changePassword()
     {
@@ -315,9 +314,9 @@ class UserController
         }
     }
 
-    public function deleteUser()
+    public function deleteUser($id)
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
             http_response_code(405);
             echo json_encode(["success" => false, "message" => "Method not allowed"]);
             exit;
@@ -325,27 +324,27 @@ class UserController
 
         session_start();
         $user_id = $_SESSION['user_id'] ?? null;
-
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User is not logged in"]);
             return;
         }
-        $role = $_SESSION['role'] ?? null;
-        if ($role !== '1') {
+
+        $userModel = new User();
+        $admin = $userModel->getUserById($user_id);
+        $user = $userModel->getUserById($id);
+
+        $role = $admin['role'] ?? null;
+        if ($role !== 1) {
             echo json_encode(["success" => false, "message" => "Only admins can delete accounts"]);
             return;
         }
-        $userModel = new User();
-
-        $user = $userModel->getUserById($user_id);
 
         if (!$user) {
             echo json_encode(["success" => false, "message" => "User does not exist"]);
             return;
         }
 
-        if ($userModel->deleteUser($user_id)) {
-            session_destroy();
+        if ($userModel->deleteUser($id)) {
             echo json_encode(["success" => true, "message" => "Delete user successfull"]);
         } else {
             echo json_encode(["success" => false, "message" => "Delete user unsuccessfull"]);

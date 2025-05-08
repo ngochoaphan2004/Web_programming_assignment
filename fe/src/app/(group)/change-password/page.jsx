@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import axiosConfig from '@/axiosConfig';
 import { AnimatePresence } from 'framer-motion';
-import ConfirmCustom from '../../../../components/comfirm/comfirm1';
+import ConfirmCustom from '../../../../components/comfirm/comfirm';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function ChangePassword() {

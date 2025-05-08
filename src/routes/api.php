@@ -63,8 +63,8 @@ switch (true) {
     case $uri === 'user/logout' && $requestMethod === 'POST':
         $userController->logout();
         break;
-    case $uri === 'user' && $requestMethod === 'DELETE':
-        $userController->deleteUser();
+    case preg_match('/^user\/(\d+)$/', $uri, $matches) && $requestMethod === 'DELETE':
+        $userController->deleteUser($matches[1]);
         break;
     case $uri === 'users/change-password' && $requestMethod === 'POST':
         $userController->changePassword();
