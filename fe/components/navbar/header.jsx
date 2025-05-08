@@ -257,9 +257,9 @@ function TempHeader(props) {
                                 </button>
 
                                 {dropdown && (
-                                    <ul className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
+                                    <ul className="absolute right-0 mt-2 min-w-[20rem] max-w-full bg-white border border-gray-200 rounded shadow-lg z-50">
                                         <li>
-                                            <a href="/profile" className="block px-4 py-2 hover:bg-gray-100">My Account</a>
+                                            <a href="/profile" className="block px-4 py-2 hover:bg-gray-100">Thông tin tài khoản</a>
                                         </li>
                                         <li>
                                             <a href="/change-password" className="block px-4 py-2 hover:bg-gray-100">Thay đổi mật khẩu</a>
