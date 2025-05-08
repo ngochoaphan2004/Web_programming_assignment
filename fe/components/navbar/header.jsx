@@ -18,7 +18,8 @@ const AdminNav = [
     { url: "/admin/content", title: "Content", elementID: "content" },
     { url: "/admin/contact", title: "Contact", elementID: "contact" },
     { url: "/admin/products", title: "Products", elementID: "products" },
-    { url: "/admin/receipts", title: "Receipts", elementID: "receipts" }
+    { url: "/admin/receipts", title: "Receipts", elementID: "receipts" },
+    { url: "/admin/questions", title: "Questions", elementID: "questions"}
 ]
 
 
