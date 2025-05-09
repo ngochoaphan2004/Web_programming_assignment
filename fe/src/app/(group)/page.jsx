@@ -67,7 +67,7 @@ export default function Home() {
                 whileHover={{ scale: 1.05 }}
               />
             </div>
-            <p className="mt-2 text-sm line-clamp-2 text-center">{p.name}</p>
+            <p className="mt-2 text-sm line-clamp-2 text-center h-[40px] overflow-hidden">{p.name}</p>
           </a>
           <p className="font-bold text-center">
             {Number(p.price).toLocaleString("vi-VN")}₫

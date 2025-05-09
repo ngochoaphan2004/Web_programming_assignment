@@ -5,12 +5,14 @@ class AuthService {
 
     public function checkSession() {
         session_start();
+        $shop = new Shop();
+        $shopInfo = $shop->getShopInfo();
 
         if (isset($_SESSION['user_id'])) {
 
             $userAcc = new User();
             $user = $userAcc->getUserById($_SESSION['user_id']);
-
+            
             return [
                 "authenticated" => true,
                 "admin" => $_SESSION['role'] == 1,
@@ -19,13 +21,16 @@ class AuthService {
                     "name" => $_SESSION['name'],
                     "email" => $_SESSION['email'],
                     "role" => $_SESSION['role'],
-                    "avatar" => $user['avatar']
-                ]
+                    "avatar" => $user['avatar'],
+                    "phone" => $user['phone']
+                ],
+                "logo" => $shopInfo['logo']
             ];
         } else {
             return [
                 "authenticated" => false,
-                "admin" => false
+                "admin" => false,
+                "logo" => $shopInfo['logo']
             ];
         }
     }

@@ -98,7 +98,7 @@ export default function BaloPage() {
                   transition={{ duration: .2 }}
                 />
               </div>
-              <p className="mt-2 text-sm line-clamp-2 text-center">{p.name}</p>
+              <p className="mt-2 text-sm line-clamp-2 text-center h-[40px] overflow-hidden">{p.name}</p>
             </a>
 
             {/* GIÁ */}
