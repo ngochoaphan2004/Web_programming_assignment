@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState("");
+  const [logo, setLogo] = useState("");
   const urlPath = usePathname()
   const router = useRouter();
 
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }) => {
           setAuthen(data.authenticated);
           setAdmin(data.admin);
           setUser(data.user);
+          setLogo(data.logo);
           setLoading(false);
         })
         .catch((error) => {
@@ -48,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authen, admin, loading, user }}>
+    <AuthContext.Provider value={{ authen, admin, loading, user, logo}}>
       {children}
     </AuthContext.Provider>
   );

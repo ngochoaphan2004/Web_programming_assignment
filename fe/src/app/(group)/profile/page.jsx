@@ -42,6 +42,8 @@ export default function ProfilePage() {
   }, []);
 
   const handleSubmit = async (e) => {
+    console.log(formData);
+    
     e.preventDefault();
     const nameCharRegex = /^[a-zA-Z0-9\s\u00C0-\u1EF9]+$/;
     // const userNameCharRegex = /^[a-zA-Z0-9\u00C0-\u1EF9]+$/;

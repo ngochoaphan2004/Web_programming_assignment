@@ -8,7 +8,6 @@ export default function UploadFileAvatar({ avatar }) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setSelectedFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setLogoPreview(reader.result);
@@ -17,26 +16,6 @@ export default function UploadFileAvatar({ avatar }) {
         }
     };
 
-    const handleUploadConfirm = async () => {
-        if (!selectedFile) return;
-
-        const formData = new FormData();
-        formData.append("avatar", selectedFile);
-
-        try {
-            const res = await axiosConfig.post("/user/avatar", formData, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            console.log("Upload thành công", res.data);
-            window.location.reload();
-        } catch (err) {
-            console.error("Upload thất bại", err);
-            alert("Có lỗi xảy ra khi tải ảnh lên");
-        }
-    };
 
     return (
         <div className="flex flex-col items-center space-y-2 relative">
@@ -71,6 +50,7 @@ export default function UploadFileAvatar({ avatar }) {
                     Save Change
                 </button>
             )}
+
         </div>
     );
 }
