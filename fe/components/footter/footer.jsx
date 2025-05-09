@@ -40,25 +40,25 @@ export default function Footter() {
                     <div className="container">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div>
-                                <p className="font-bold mb-2">Về chúng tôi</p>
-                                <p>Địa chỉ 1: {address[0]?.address || ' '}</p>
-                                <p>Địa chỉ 2: {address[1]?.address || ' '}</p>
-                                {/* 
-                                <p>Địa chỉ 1: {companyInfo.address[0]?.address || ' '}</p>
-                                <p>Địa chỉ 2: {companyInfo.address[1]?.address || ' '}</p> */}
-                                <p>Email: {companyInfo.email || ' '}</p>
-                            </div>
-                            <div>
-                                <p className="font-bold mb-2">Hỗ trợ</p>
-                                <p>Chính sách đổi trả</p>
-                                <p>Chính sách giao hàng</p>
-                            </div>
-                            <div>
+                                <p className="font-bold mb-2">Mô tả</p>
+                                <p >{companyInfo.description}</p>
                                 <div className="flex space-x-4 mt-2">
                                     <Link href="/help" className="hover:underline text-blue-400">
                                         Liên hệ với chúng tôi
                                     </Link>
                                 </div>
+                            </div>
+                            <div>
+                                <p className="font-bold mb-2">Địa chỉ</p>
+                                <p>Địa chỉ 1: {address[0]?.address || ' '}</p>
+                                <p>Địa chỉ 2: {address[1]?.address || ' '}</p>
+                                <p>Email: {companyInfo.email || ' '}</p>
+                                <p>Phone: {companyInfo.phone || ' '}</p>
+                            </div>
+                            <div>
+                                <p className="font-bold mb-2">Hỗ trợ</p>
+                                <p>Chính sách đổi trả</p>
+                                <p>Chính sách giao hàng</p>
                             </div>
                         </div>
                     </div>

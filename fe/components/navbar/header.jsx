@@ -19,7 +19,7 @@ const AdminNav = [
     { url: "/admin/contact", title: "Contact", elementID: "contact" },
     { url: "/admin/products", title: "Products", elementID: "products" },
     { url: "/admin/receipts", title: "Receipts", elementID: "receipts" },
-    { url: "/admin/questions", title: "Questions", elementID: "questions"}
+    { url: "/admin/questions", title: "Questions", elementID: "questions" }
 ]
 
 
@@ -81,7 +81,7 @@ function TempHeader(props) {
                             <div className="logo flex">
                                 <a className="block">
                                     <img
-                                        src="/logo.png"
+                                        src={process.env.NEXT_PUBLIC_BASE_BE_URL + props.logo}
                                         alt="Logo"
                                         className="!h-6 sm:!h-8 md:!h-10 w-auto max-w-full object-contain"
                                     />
@@ -108,7 +108,7 @@ function TempHeader(props) {
                             <div className="logo flex">
                                 <a href="/" className="block">
                                     <img
-                                        src={"/logo.png"}
+                                        src={process.env.NEXT_PUBLIC_BASE_BE_URL + '/' + props.logo}
                                         alt="Logo"
                                         className="!h-6 sm:!h-8 md:!h-10 w-auto max-w-full object-contain"
                                     />

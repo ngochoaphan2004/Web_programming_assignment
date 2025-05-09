@@ -9,7 +9,6 @@ export default function UploadFileAvatar({avatar, setFile}) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setSelectedFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setLogoPreview(reader.result);
@@ -19,26 +18,6 @@ export default function UploadFileAvatar({avatar, setFile}) {
         }
     };
 
-    const handleUploadConfirm = async () => {
-        if (!selectedFile) return;
-
-        const formData = new FormData();
-        formData.append("avatar", selectedFile);
-
-        try {
-            const res = await axiosConfig.post("/user/avatar", formData, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            console.log("Upload thành công", res.data);
-            window.location.reload();
-        } catch (err) {
-            console.error("Upload thất bại", err);
-            alert("Có lỗi xảy ra khi tải ảnh lên");
-        }
-    };
 
     return (
         <div className="group hover:bg-gray-500 hover:opacity-50 transition-all duration-300 border border-gray-300 flex-1 absolute w-32 h-32 rounded-full relative overflow-hidden">
@@ -54,7 +33,7 @@ export default function UploadFileAvatar({avatar, setFile}) {
                 type="file"
                 id="logo-upload"
                 accept="image/*"
-                onChange={handleLogoUpload}
+                onChange={handleFileChange}
                 className="hidden"
             />
             <label
