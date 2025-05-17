@@ -51,12 +51,8 @@ function TempHeader(props) {
         }
     };
     useEffect(() => {
-        console.log("props:", props);
-    
         if (props.user && props.user.avatar) {
             setAvatar(props.user.avatar);
-            console.log("avatar", props.user.avatar);
-            console.log("avatar", avatar);
         }
     
         if (props.admin) {

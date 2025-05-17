@@ -31,7 +31,7 @@ export default function ProfilePage() {
         setGender(data.gender || "");
         setAddress(data.address || "");
         setAvatar(data.avatar || "");
-        setRole(data.role || 2);
+        setRole(parseInt(data.role) || 2);
       } catch (error) {
         console.error("Lỗi khi gọi API user/now:", error);
         router.push("/404");
