@@ -48,9 +48,9 @@ export default function AccountPage() {
 
   const getRoleClass = (status) => {
     switch (status) {
-      case 1:
+      case "1":
         return { bg: "bg-green-50", border: "border-green-400", text: "text-green-700" };
-      case 2:
+      case "2":
         return { bg: "bg-blue-50", border: "border-blue-400", text: "text-blue-700" };
       default:
         return { bg: "bg-red-50", border: "border-red-400", text: "text-red-700" };
@@ -130,7 +130,6 @@ export default function AccountPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {accounts.map((account, index) => {
                     const roleClass = getRoleClass(account.role);
-
                     return (
                       <tr
                         key={account.id}
@@ -143,7 +142,7 @@ export default function AccountPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`flex justify-center min-w-[85px] w-full px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${roleClass.text} ${roleClass.bg.replace('50', '100')} transition-colors duration-200`}>
                             <span>
-                              {account.role === 1 ? "Nhà quản lý" : account.role === 2 ? "Khách hàng" : "Đã khóa"}
+                              {account.role === "1" ? "Nhà quản lý" : account.role === "2" ? "Khách hàng" : "Đã khóa"}
                             </span>
                           </span>
                         </td>
