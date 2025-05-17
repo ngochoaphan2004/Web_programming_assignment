@@ -60,3 +60,6 @@ Hệ thống này không chỉ cung cấp các thông tin cơ bản về doanh n
 🌐 Truy cập giao diện người dùng:
 
     http://localhost:3000
+
+▶️Demo
+https://youtu.be/cF-zog1TD9A
